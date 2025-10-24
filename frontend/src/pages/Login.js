@@ -16,16 +16,24 @@ function Login({ setAuth }) {
         setLoading(true);
 
         try {
+            console.log('🔐 Attempting login for:', username);
             const response = await login(username, password);
+
+            console.log('✅ Login successful:', response.data);
 
             // Store token and user info
             sessionStorage.setItem('token', response.data.token);
             sessionStorage.setItem('user', JSON.stringify(response.data));
 
+            // Verify storage
+            console.log('🔑 Token stored:', sessionStorage.getItem('token')?.substring(0, 20) + '...');
+            console.log('👤 User stored:', JSON.parse(sessionStorage.getItem('user')));
+
             // Update auth state and redirect to dashboard
             setAuth(true);
             navigate('/');
         } catch (err) {
+            console.error('❌ Login failed:', err);
             setError(err.response?.data || 'Login failed. Please check your credentials.');
         } finally {
             setLoading(false);

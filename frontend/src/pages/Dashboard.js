@@ -16,11 +16,32 @@ function Dashboard() {
 
     const fetchExams = async () => {
         try {
+            console.log('📋 Fetching exams from dashboard...');
+
+            // Check if token exists
+            const token = sessionStorage.getItem('token');
+            console.log('🔑 Token present:', !!token);
+
+            if (!token) {
+                console.error('❌ No token found, redirecting to login...');
+                navigate('/login');
+                return;
+            }
+
             const response = await getMyExams();
+            console.log('✅ Exams fetched successfully:', response.data);
+
             setExams(response.data);
+            setError(''); // Clear any previous errors
         } catch (err) {
-            setError('Failed to load exams');
-            console.error(err);
+            console.error('❌ Error fetching exams:', err);
+            console.error('Error details:', {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status
+            });
+
+            setError('Failed to load exams: ' + (err.response?.data || err.message));
         } finally {
             setLoading(false);
         }

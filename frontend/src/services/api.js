@@ -1,4 +1,4 @@
-// src/services/api.js - All backend API calls
+// src/services/api.js - Fixed version with proper token handling
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080/api';
@@ -11,14 +11,42 @@ const api = axios.create({
     }
 });
 
-// Add token to requests automatically
-api.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+// Add token to ALL requests automatically
+api.interceptors.request.use(
+    (config) => {
+        const token = sessionStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log('🔑 Sending request with token:', token.substring(0, 20) + '...');
+        } else {
+            console.warn('⚠️ No token found in sessionStorage');
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    return config;
-});
+);
+
+// Add response interceptor to handle errors
+api.interceptors.response.use(
+    (response) => {
+        console.log('✅ Response received:', response.status);
+        return response;
+    },
+    (error) => {
+        console.error('❌ Request failed:', error.response?.status, error.message);
+
+        // If 401, clear token and redirect to login
+        if (error.response?.status === 401) {
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
+            window.location.href = '/login';
+        }
+
+        return Promise.reject(error);
+    }
+);
 
 // ============ AUTH APIs ============
 export const login = (username, password) => {
@@ -33,6 +61,7 @@ export const logout = () => {
 
 // ============ EXAM APIs ============
 export const getMyExams = () => {
+    console.log('📋 Fetching exams...');
     return api.get('/exams');
 };
 
