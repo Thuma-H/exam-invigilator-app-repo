@@ -2,6 +2,7 @@ package com.examapp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Incident entity records examination incidents/irregularities.
@@ -17,10 +18,12 @@ public class Incident {
 
     @ManyToOne
     @JoinColumn(name = "exam_id", nullable = false)
+    @JsonIgnoreProperties({"students", "invigilator"})
     private Exam exam;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
+    @JsonIgnoreProperties({"exams"})
     private Student student; // Optional: null if incident not student-specific
 
     @Column(nullable = false)

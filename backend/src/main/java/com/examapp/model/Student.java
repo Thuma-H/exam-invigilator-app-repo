@@ -1,6 +1,7 @@
 package com.examapp.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class Student {
 
     // Many-to-Many relationship with exams (a student can take multiple exams)
     @ManyToMany(mappedBy = "students")
+    @JsonBackReference
     private List<Exam> exams = new ArrayList<>();
 
     // Constructors

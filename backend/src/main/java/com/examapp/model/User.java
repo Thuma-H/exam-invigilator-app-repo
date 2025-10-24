@@ -1,6 +1,7 @@
 package com.examapp.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * User entity represents invigilators and admins who use the system.
@@ -18,6 +19,7 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password; // Will be BCrypt hashed
 
     @Column(name = "full_name", nullable = false)

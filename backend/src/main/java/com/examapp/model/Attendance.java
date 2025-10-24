@@ -2,6 +2,7 @@ package com.examapp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Attendance entity tracks student attendance for specific exams.
@@ -17,10 +18,12 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name = "exam_id", nullable = false)
+    @JsonIgnoreProperties({"students", "invigilator"})
     private Exam exam;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
+    @JsonIgnoreProperties({"exams"})
     private Student student;
 
     @Column(nullable = false)

@@ -1,6 +1,7 @@
 package com.examapp.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class Exam {
             joinColumns = @JoinColumn(name = "exam_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
+    @JsonManagedReference
     private List<Student> students = new ArrayList<>();
 
     // Constructors
