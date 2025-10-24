@@ -1,9 +1,9 @@
-// src/services/api.js - All backend API calls in one place
+// src/services/api.js - All backend API calls
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
-// Create axios instance with default config
+// Create axios instance
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {

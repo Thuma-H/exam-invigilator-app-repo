@@ -61,32 +61,26 @@ public class DataInitializer implements CommandLineRunner {
      * Create default users (invigilators)
      */
     private void createUsers() {
-        if (!userRepository.existsByUsername("invigilator1")) {
-            User invigilator1 = new User();
-            invigilator1.setUsername("invigilator1");
-            invigilator1.setPassword(passwordEncoder.encode("password123"));
-            invigilator1.setFullName("John Doe");
-            invigilator1.setRole("INVIGILATOR");
-            userRepository.save(invigilator1);
-        }
+        User invigilator1 = new User();
+        invigilator1.setUsername("invigilator1");
+        invigilator1.setPassword(passwordEncoder.encode("password123"));
+        invigilator1.setFullName("John Doe");
+        invigilator1.setRole("INVIGILATOR");
+        userRepository.save(invigilator1);
 
-        if (!userRepository.existsByUsername("invigilator2")) {
-            User invigilator2 = new User();
-            invigilator2.setUsername("invigilator2");
-            invigilator2.setPassword(passwordEncoder.encode("password123"));
-            invigilator2.setFullName("Jane Smith");
-            invigilator2.setRole("INVIGILATOR");
-            userRepository.save(invigilator2);
-        }
+        User invigilator2 = new User();
+        invigilator2.setUsername("invigilator2");
+        invigilator2.setPassword(passwordEncoder.encode("password123"));
+        invigilator2.setFullName("Jane Smith");
+        invigilator2.setRole("INVIGILATOR");
+        userRepository.save(invigilator2);
 
-        if (!userRepository.existsByUsername("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setFullName("Admin User");
-            admin.setRole("ADMIN");
-            userRepository.save(admin);
-        }
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setFullName("Admin User");
+        admin.setRole("ADMIN");
+        userRepository.save(admin);
 
         System.out.println("✓ Created 3 users (2 invigilators, 1 admin)");
     }
