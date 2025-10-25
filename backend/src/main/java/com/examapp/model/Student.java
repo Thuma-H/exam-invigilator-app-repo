@@ -26,10 +26,10 @@ public class Student {
     @Column(nullable = false)
     private String program; // e.g., "Computer Science"
 
-    // Many-to-Many relationship with exams (a student can take multiple exams)
-    @ManyToMany(mappedBy = "students")
-    @JsonBackReference
-    private List<Exam> exams = new ArrayList<>();
+//    // Many-to-Many relationship with exams (a student can take multiple exams)
+//    @ManyToMany(mappedBy = "students")
+//    @JsonBackReference
+//    private List<Exam> exams = new ArrayList<>();
 
     // Constructors
     public Student() {}
@@ -73,11 +73,11 @@ public class Student {
         this.program = program;
     }
 
-    public List<Exam> getExams() {
-        return exams;
-    }
+//    public List<Exam> getExams() {
+//        return exams;
+//    }
 
-    public void setExams(List<Exam> exams) {
-        this.exams = exams;
-    }
+//    public void setExams(List<Exam> exams) {
+//        this.exams = exams;
+//    }
 }
