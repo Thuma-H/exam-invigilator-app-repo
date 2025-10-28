@@ -1,14 +1,11 @@
 // src/services/api.js - Fixed version with proper token handling
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+import { API_CONFIG } from '../config/environment';
 
 // Create axios instance
 const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    baseURL: API_CONFIG.BASE_URL,
 });
 
 // Add token to ALL requests automatically
