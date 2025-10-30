@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getExamById, getStudentsForExam, markAttendance, getAttendanceForExam } from '../services/api';
+import ExamTimer from '../components/ExamTimer';
 
 function AttendancePage() {
     const { examId } = useParams();
@@ -69,6 +70,9 @@ function AttendancePage() {
                         <p><strong>Date:</strong> {new Date(exam.examDate).toLocaleDateString()}</p>
                     </div>
                 )}
+
+                {/* Exam Timer - Always visible during attendance */}
+                {exam && <ExamTimer exam={exam} />}
 
                 {message && <div style={{ padding: '1rem', background: '#d4edda', color: '#155724', borderRadius: '4px', marginBottom: '1rem' }}>{message}</div>}
 

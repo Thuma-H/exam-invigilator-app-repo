@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getMyExams } from '../services/api';
+import ExamTimer from '../components/ExamTimer';
 
 function Dashboard() {
     const [exams, setExams] = useState([]);
@@ -82,6 +83,12 @@ function Dashboard() {
                         {exams.map((exam) => (
                             <div key={exam.id} className="card">
                                 <h3>{exam.courseCode} - {exam.courseName}</h3>
+
+                                {/* Show timer if exam is today */}
+                                {new Date(exam.examDate).toDateString() === new Date().toDateString() && (
+                                    <ExamTimer exam={exam} />
+                                )}
+
                                 <p><strong>Date:</strong> {formatDate(exam.examDate)}</p>
                                 <p><strong>Time:</strong> {formatTime(exam.startTime)}</p>
                                 <p><strong>Duration:</strong> {exam.duration} minutes</p>

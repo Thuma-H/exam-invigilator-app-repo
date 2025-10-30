@@ -127,8 +127,8 @@ public class DataInitializer implements CommandLineRunner {
                 "Software Engineering",
                 "Hall A",
                 LocalDate.now(), // Today
-                LocalTime.of(9, 0),
-                180, // 3 hours
+                LocalTime.of(16, 50),
+                20, // 3 hours
                 invigilator1
         );
         exam1.setStudents(Arrays.asList(s1, s2, s3, s4, s5));
