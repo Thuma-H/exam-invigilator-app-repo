@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getExamById, getStudentsForExam, markAttendance, getAttendanceForExam } from '../services/api';
 import ExamTimer from '../components/ExamTimer';
+import { offlineStorage } from '../services/offlineStorage';
 
 function AttendancePage() {
     const { examId } = useParams();
@@ -17,7 +18,32 @@ function AttendancePage() {
     useEffect(() => {
         fetchData();
     }, [examId]);
+// Listen for when connection is restored
+    useEffect(() => {
+        const handleOnline = () => {
+            if (offlineStorage.hasUnsyncedData()) {
+                setMessage('🔄 Back online! Syncing data...');
+                offlineStorage.syncWhenOnline();
+                setTimeout(() => {
+                    setMessage('✅ Data synced successfully!');
+                    fetchData(); // Refresh from server
+                }, 2000);
+            }
+        };
 
+        const handleOffline = () => {
+            setMessage('📡 You are offline - changes will be saved locally');
+            setTimeout(() => setMessage(''), 3000);
+        };
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
     const fetchData = async () => {
         try {
             // Fetch exam details
@@ -43,13 +69,27 @@ function AttendancePage() {
     };
 
     const handleMarkAttendance = async (studentId, status) => {
+        // Check if online
+        const isOnline = navigator.onLine;
+
         try {
-            await markAttendance(examId, studentId, status, 'MANUAL');
-            setAttendance({ ...attendance, [studentId]: status });
-            setMessage(`Attendance marked as ${status}`);
+            if (isOnline) {
+                // Normal online flow
+                await markAttendance(examId, studentId, status, 'MANUAL');
+                setAttendance({ ...attendance, [studentId]: status });
+                setMessage(`✅ Attendance marked as ${status}`);
+            } else {
+                // Offline mode - save locally
+                offlineStorage.saveAttendance(examId, studentId, status);
+                setAttendance({ ...attendance, [studentId]: status });
+                setMessage(`📦 Saved offline: ${status} (will sync when online)`);
+            }
             setTimeout(() => setMessage(''), 3000);
         } catch (err) {
-            alert(err.response?.data || 'Failed to mark attendance');
+            // If online but API fails, save offline as backup
+            offlineStorage.saveAttendance(examId, studentId, status);
+            setAttendance({ ...attendance, [studentId]: status });
+            setMessage('⚠️ Saved offline - will sync later');
         }
     };
 

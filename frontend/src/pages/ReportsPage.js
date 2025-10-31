@@ -32,6 +32,44 @@ function ReportsPage() {
             setLoading(false);
         }
     };
+    const exportReport = () => {
+        const report = {
+            examInfo: {
+                code: exam.courseCode,
+                name: exam.courseName,
+                date: exam.examDate,
+                venue: exam.venue,
+                duration: exam.duration
+            },
+            attendance: {
+                totalStudents: summary.totalStudents,
+                present: summary.presentCount,
+                absent: summary.absentCount,
+                late: summary.lateCount,
+                attendanceRate: summary.attendancePercentage.toFixed(1) + '%'
+            },
+            incidents: {
+                total: incidentCount,
+                details: 'View in system for full incident reports'
+            },
+            exportedAt: new Date().toISOString(),
+            exportedBy: JSON.parse(sessionStorage.getItem('user')).fullName
+        };
+
+        // Create downloadable JSON file
+        const blob = new Blob([JSON.stringify(report, null, 2)],
+            { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Exam_Report_${exam.courseCode}_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert('✅ Report downloaded successfully!');
+    };
 
     if (loading) return <div><Navbar /><div className="loading">Loading reports...</div></div>;
 
@@ -131,6 +169,13 @@ function ReportsPage() {
                             onClick={() => navigate(`/attendance/${examId}`)}
                         >
                             Mark Attendance
+                        </button>
+                        <button
+                            className="btn btn-success"
+                            onClick={exportReport}
+                            style={{ background: '#2196F3' }}
+                        >
+                            📥 Download Report (JSON)
                         </button>
                         <button
                             className="btn btn-danger"

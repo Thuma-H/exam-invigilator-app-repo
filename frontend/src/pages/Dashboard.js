@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getMyExams } from '../services/api';
 import ExamTimer from '../components/ExamTimer';
+import NetworkStatus from '../components/NetworkStatus';
 
 function Dashboard() {
     const [exams, setExams] = useState([]);
@@ -119,6 +120,7 @@ function Dashboard() {
                     </div>
                 )}
             </div>
+            <NetworkStatus />
         </div>
     );
 }
