@@ -1,3 +1,4 @@
+// java
 package com.examapp.config;
 
 import org.springframework.context.annotation.Bean;
@@ -34,9 +35,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // allow all origins (patterns) and reflect origin in response (needed for cross-device dev)
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        // set to true if your frontend sends cookies or you rely on cookie-based auth
         configuration.setAllowCredentials(false);
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
 
