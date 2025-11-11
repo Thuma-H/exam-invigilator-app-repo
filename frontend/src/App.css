@@ -224,3 +224,22 @@ body {
     font-size: 1.2rem;
     color: #666;
 }
+
+@media (max-width: 768px) {
+    /* Make fonts bigger on mobile */
+    body {
+        font-size: 18px; /* was 16px */
+    }
+
+    /* Bigger buttons */
+    .btn {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    /* More spacing */
+    .card {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+}

@@ -5,7 +5,7 @@
 // 2. Update BACKEND_IP below with your IPv4 address (e.g., '192.168.1.100')
 // 3. Restart frontend: Ctrl+C then 'npm start'
 
-const BACKEND_IP = '192.168.8.119'; // ⚠️ CHANGE THIS TO YOUR IP
+const BACKEND_IP = '192.168.8.119   '; // ⚠️ CHANGE THIS TO YOUR IP
 const BACKEND_PORT = '8080';
 
 // Auto-detect if running on same machine or different device

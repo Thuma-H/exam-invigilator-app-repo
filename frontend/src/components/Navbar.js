@@ -26,6 +26,9 @@ function Navbar() {
                 <button onClick={handleLogout} className="btn-logout">
                     Logout
                 </button>
+                <button onClick={() => navigate('/barcodes')}>
+                    📊 Student Barcodes
+                </button>
             </div>
         </nav>
     );

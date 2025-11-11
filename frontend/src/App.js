@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import AttendancePage from './pages/AttendancePage';
 import IncidentPage from './pages/IncidentPage';
 import ReportsPage from './pages/ReportsPage';
+import BarcodeManagementPage from './pages/BarcodeManagementPage';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/attendance/:examId" element={<ProtectedRoute><AttendancePage /></ProtectedRoute>} />
                 <Route path="/incident/:examId" element={<ProtectedRoute><IncidentPage /></ProtectedRoute>} />
                 <Route path="/reports/:examId" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
+                <Route path="/barcodes" element={<ProtectedRoute><BarcodeManagementPage /></ProtectedRoute>} />
 
                 {/* Redirect unknown routes to dashboard */}
                 <Route path="*" element={<Navigate to="/" />} />
