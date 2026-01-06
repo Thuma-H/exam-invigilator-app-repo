@@ -116,6 +116,19 @@ git --version
 
 ---
 
+### 1.5 GitHub Setup (New PC)
+```bash
+# Configure Git
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Clone the repository
+git clone https://github.com/YOUR-USERNAME/exam-invigilator.git
+cd exam-invigilator
+```
+
+---
+
 ## 2. Downloading the Project
 
 ### Option A: Using Git (Recommended)
