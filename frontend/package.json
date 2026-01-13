@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@ericblade/quagga2": "^1.12.1",
+    "@react-buddy/ide-toolbox": "^2.4.0",
     "axios": "^1.5.1",
     "react": "^18.2.0",
     "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.18.0",
-    "react-scripts": "5.0.1",
-    "@react-buddy/ide-toolbox": "^2.4.0"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start --host 0.0.0.0",
