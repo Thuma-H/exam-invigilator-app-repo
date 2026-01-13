@@ -1,0 +1,277 @@
+/* src/pages/Dashboard.css */
+.dashboard-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.dashboard-header {
+    background: white;
+    border-radius: 10px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+    font-size: 28px;
+}
+
+.welcome-text {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* NEW: Librarian Button */
+.btn-librarian {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-librarian:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+.loading {
+    text-align: center;
+    padding: 50px;
+    color: white;
+    font-size: 18px;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #c33;
+}
+
+.exams-section {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exams-section h2 {
+    margin: 0 0 25px 0;
+    color: #2c3e50;
+    font-size: 24px;
+}
+
+.no-exams {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.no-exams p {
+    font-size: 18px;
+    margin: 0;
+}
+
+.exams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.exam-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.exam-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.exam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.exam-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 22px;
+}
+
+.exam-status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.exam-status.SCHEDULED {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.exam-status.ONGOING {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.exam-status.COMPLETED {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.exam-details {
+    margin-bottom: 20px;
+}
+
+.exam-name {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.exam-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+    font-size: 14px;
+}
+
+.info-item .icon {
+    font-size: 16px;
+}
+
+.exam-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-action {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-attendance {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-attendance:hover {
+    background-color: #218838;
+    transform: scale(1.02);
+}
+
+.btn-incident {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-incident:hover {
+    background-color: #c82333;
+    transform: scale(1.02);
+}
+
+.btn-reports {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-reports:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 15px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-librarian,
+    .btn-logout {
+        width: 100%;
+    }
+
+    .exams-section {
+        padding: 20px;
+    }
+
+    .exams-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .exam-header h3 {
+        font-size: 18px;
+    }
+}

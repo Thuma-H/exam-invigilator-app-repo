@@ -1,8 +1,8 @@
 // src/pages/AttendancePage.js - Mark student attendance
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import { getExamById, getStudentsForExam, markAttendance, getAttendanceForExam } from '../services/api';
+import apiService from '../services/apiService';
+import './AttendancePage.css';
 import ExamTimer from '../components/ExamTimer';
 import { offlineStorage } from '../services/offlineStorage';
 
@@ -93,7 +93,7 @@ function AttendancePage() {
         }
     };
 
-    if (loading) return <div><Navbar /><div className="loading">Loading...</div></div>;
+    if (loading) return <div><div className="loading">Loading...</div></div>;
 
     return (
         <div>

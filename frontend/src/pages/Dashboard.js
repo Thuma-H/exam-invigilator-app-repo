@@ -1,118 +1,140 @@
-// src/pages/Dashboard.js - Dashboard showing assigned exams
+// src/pages/Dashboard.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import { getMyExams } from '../services/api';
-import ExamTimer from '../components/ExamTimer';
-import NetworkStatus from '../components/NetworkStatus';
+import apiService from '../services/apiService';
+import './Dashboard.css';
 
-function Dashboard() {
+const Dashboard = () => {
     const [exams, setExams] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const username = localStorage.getItem('username');
 
     useEffect(() => {
-        fetchExams();
+        loadExams();
     }, []);
 
-    const fetchExams = async () => {
+    const loadExams = async () => {
         try {
-            console.log('📋 Fetching exams from dashboard...');
-
-            // Check if token exists
-            const token = sessionStorage.getItem('token');
-            console.log('🔑 Token present:', !!token);
-
-            if (!token) {
-                console.error('❌ No token found, redirecting to login...');
-                navigate('/login');
-                return;
-            }
-
-            const response = await getMyExams();
-            console.log('✅ Exams fetched successfully:', response.data);
-
-            setExams(response.data);
-            setError(''); // Clear any previous errors
+            setLoading(true);
+            const data = await apiService.getMyExams();
+            setExams(data);
+            setError('');
         } catch (err) {
-            console.error('❌ Error fetching exams:', err);
-            console.error('Error details:', {
-                message: err.message,
-                response: err.response?.data,
-                status: err.response?.status
-            });
-
-            setError('Failed to load exams: ' + (err.response?.data || err.message));
+            setError('Failed to load exams: ' + err.message);
+            console.error('Error loading exams:', err);
         } finally {
             setLoading(false);
         }
     };
 
-    const formatDate = (dateString) => {
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/login');
+    };
+
+    const formatDateTime = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
+        return date.toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
             year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+            hour: '2-digit',
+            minute: '2-digit'
         });
     };
 
-    const formatTime = (timeString) => {
-        const [hours, minutes] = timeString.split(':');
-        const hour = parseInt(hours);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        return `${displayHour}:${minutes} ${ampm}`;
-    };
-
-    if (loading) return <div><Navbar /><div className="loading">Loading exams...</div></div>;
-    if (error) return <div><Navbar /><div className="error-message">{error}</div></div>;
+    if (loading) {
+        return (
+            <div className="dashboard-container">
+                <div className="loading">Loading exams...</div>
+            </div>
+        );
+    }
 
     return (
-        <div>
-            <Navbar />
-            <div className="container">
+        <div className="dashboard-container">
+            <header className="dashboard-header">
+                <div className="header-content">
+                    <h1>📋 Exam Invigilator Dashboard</h1>
+                    <p className="welcome-text">Welcome, <strong>{username}</strong></p>
+                </div>
+                <div className="header-actions">
+                    {/* NEW: Librarian Dashboard Button */}
+                    <button
+                        className="btn-librarian"
+                        onClick={() => navigate('/librarian')}
+                    >
+                        📚 Librarian
+                    </button>
+                    <button className="btn-logout" onClick={handleLogout}>
+                        Logout
+                    </button>
+                </div>
+            </header>
+
+            {error && (
+                <div className="error-message">
+                    ❌ {error}
+                </div>
+            )}
+
+            <div className="exams-section">
                 <h2>My Assigned Exams</h2>
 
                 {exams.length === 0 ? (
-                    <div className="card">
-                        <p>No exams assigned to you yet.</p>
+                    <div className="no-exams">
+                        <p>No exams assigned at this time.</p>
                     </div>
                 ) : (
-                    <div className="grid">
+                    <div className="exams-grid">
                         {exams.map((exam) => (
-                            <div key={exam.id} className="card">
-                                <h3>{exam.courseCode} - {exam.courseName}</h3>
+                            <div key={exam.id} className="exam-card">
+                                <div className="exam-header">
+                                    <h3>{exam.courseCode}</h3>
+                                    <span className={`exam-status ${exam.status}`}>
+                    {exam.status}
+                  </span>
+                                </div>
 
-                                {/* Show timer if exam is today */}
-                                {new Date(exam.examDate).toDateString() === new Date().toDateString() && (
-                                    <ExamTimer exam={exam} />
-                                )}
+                                <div className="exam-details">
+                                    <p className="exam-name">{exam.courseName}</p>
+                                    <div className="exam-info">
+                                        <div className="info-item">
+                                            <span className="icon">📅</span>
+                                            <span>{formatDateTime(exam.dateTime)}</span>
+                                        </div>
+                                        <div className="info-item">
+                                            <span className="icon">📍</span>
+                                            <span>{exam.venue}</span>
+                                        </div>
+                                        <div className="info-item">
+                                            <span className="icon">👥</span>
+                                            <span>{exam.studentCount || 0} Students</span>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                <p><strong>Date:</strong> {formatDate(exam.examDate)}</p>
-                                <p><strong>Time:</strong> {formatTime(exam.startTime)}</p>
-                                <p><strong>Duration:</strong> {exam.duration} minutes</p>
-                                <p><strong>Venue:</strong> {exam.venue}</p>
-
-                                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                <div className="exam-actions">
                                     <button
-                                        className="btn btn-primary"
+                                        className="btn-action btn-attendance"
                                         onClick={() => navigate(`/attendance/${exam.id}`)}
                                     >
-                                        Mark Attendance
+                                        ✅ Mark Attendance
                                     </button>
                                     <button
-                                        className="btn btn-danger"
+                                        className="btn-action btn-incident"
                                         onClick={() => navigate(`/incident/${exam.id}`)}
                                     >
-                                        Report Incident
+                                        🚨 Report Incident
                                     </button>
                                     <button
-                                        className="btn btn-success"
+                                        className="btn-action btn-reports"
                                         onClick={() => navigate(`/reports/${exam.id}`)}
                                     >
-                                        View Reports
+                                        📊 View Reports
                                     </button>
                                 </div>
                             </div>
@@ -120,9 +142,8 @@ function Dashboard() {
                     </div>
                 )}
             </div>
-            <NetworkStatus />
         </div>
     );
-}
+};
 
 export default Dashboard;

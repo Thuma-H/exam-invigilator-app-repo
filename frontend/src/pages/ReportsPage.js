@@ -1,8 +1,7 @@
 // src/pages/ReportsPage.js - View attendance and incident reports
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import { getExamById, getAttendanceSummary, getIncidentCount } from '../services/api';
+import apiService from '../services/apiService';
 
 function ReportsPage() {
     const { examId } = useParams();
@@ -71,11 +70,11 @@ function ReportsPage() {
         alert('✅ Report downloaded successfully!');
     };
 
-    if (loading) return <div><Navbar /><div className="loading">Loading reports...</div></div>;
+    if (loading) return <div><div className="loading">Loading reports...</div></div>;
 
     return (
         <div>
-            <Navbar />
+
             <div className="container">
                 <button onClick={() => navigate('/')} className="btn btn-primary" style={{ marginBottom: '1rem' }}>
                     ← Back to Dashboard

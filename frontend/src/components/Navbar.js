@@ -1,7 +1,7 @@
 // src/components/Navbar.js - Navigation bar component
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../services/api';
+import { logout } from '../services/apiService';
 
 function Navbar() {
     const navigate = useNavigate();

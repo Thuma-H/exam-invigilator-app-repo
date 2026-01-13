@@ -1,0 +1,215 @@
+/* frontend/src/pages/LibrarianDashboard.css */
+/* Polished dashboard styles mapped to the classes used in LibrarianDashboard.js
+   - Targets .librarian-dashboard root so styles actually apply
+   - Preserves librarian gradient button and responsive behavior */
+:root {
+    --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card: #ffffff;
+    --muted: #6b7280;
+    --text: #1f2937;
+    --primary: #0366d6;
+    --accent-grad-start: #f093fb; /* librarian gradient start */
+    --accent-grad-end: #f5576c;   /* librarian gradient end */
+    --success: #28a745;
+    --danger: #dc3545;
+    --shadow: 0 6px 18px rgba(16,24,40,0.06);
+    --glass-shadow: 0 4px 12px rgba(16,24,40,0.04);
+    --radius: 10px;
+}
+
+/* Root for this page (matches component) */
+.librarian-dashboard {
+    min-height: 100vh;
+    background: var(--bg);
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: var(--text);
+}
+
+/* Header (kept name from component) */
+.librarian-dashboard .dashboard-header {
+    background: var(--card) !important; /* ensure not overridden by global styles */
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.librarian-dashboard .btn-back {
+    background: rgba(16,24,40,0.06);
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+}
+.librarian-dashboard .btn-back:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow); }
+
+.librarian-dashboard h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-left: 6px;
+}
+
+/* Tabs */
+.librarian-dashboard .tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.librarian-dashboard .tab-btn {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(16,24,40,0.06);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.librarian-dashboard .tab-btn.active {
+    background: linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0.98));
+    box-shadow: 0 8px 22px rgba(3,102,214,0.06);
+    border-left: 4px solid var(--primary);
+}
+
+.librarian-dashboard .tab-btn .badge,
+.librarian-dashboard .badge {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+/* Alerts */
+.librarian-dashboard .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+.librarian-dashboard .alert-success { background: #e6ffef; color: #165f3b; border-left: 4px solid rgba(31,157,85,0.12); }
+.librarian-dashboard .alert-error { background: #fff5f5; color: var(--danger); border-left: 4px solid rgba(220,53,69,0.12); }
+
+/* Pending requests */
+.librarian-dashboard .pending-requests-section h3,
+.librarian-dashboard .search-section h3,
+.librarian-dashboard .all-students-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.librarian-dashboard .requests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+}
+
+.librarian-dashboard .request-card {
+    background: var(--card) !important; /* make sure it pops on the page */
+    padding: 14px;
+    border-radius: 10px;
+    box-shadow: var(--glass-shadow);
+    border: 1px solid rgba(16,24,40,0.03);
+}
+
+.librarian-dashboard .request-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.librarian-dashboard .student-id-badge {
+    font-weight: 800;
+    color: #2c3e50;
+}
+
+.librarian-dashboard .request-time { color: var(--muted); font-size: 13px; }
+
+.librarian-dashboard .request-body h4 { margin: 4px 0; font-size: 16px; }
+.librarian-dashboard .student-email { margin: 0; color: var(--muted); font-size: 13px; }
+
+.librarian-dashboard .request-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.librarian-dashboard .btn-download,
+.librarian-dashboard .btn-mark-printed,
+.librarian-dashboard .btn-clear-search,
+.librarian-dashboard .btn-download-small {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.librarian-dashboard .btn-download { background: linear-gradient(90deg, #06b6d4, #2b9cdb); color: #fff; }
+.librarian-dashboard .btn-download:hover { transform: translateY(-2px); }
+
+.librarian-dashboard .btn-mark-printed { background: #10b981; color: #fff; }
+.librarian-dashboard .btn-mark-printed:hover { transform: translateY(-2px); }
+
+/* Search area */
+.librarian-dashboard .search-section .search-bar {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 14px 0;
+    align-items: center;
+}
+
+.librarian-dashboard .search-input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(16,24,40,0.06);
+    font-size: 14px;
+}
+
+.librarian-dashboard .btn-clear-search { background: rgba(16,24,40,0.06); }
+
+.librarian-dashboard .search-results-info { color: var(--muted); margin: 6px 0 12px 0; }
+
+/* Students table */
+.librarian-dashboard .students-table-container { overflow-x: auto; background: var(--card); padding: 12px; border-radius: 10px; box-shadow: var(--glass-shadow); }
+
+.librarian-dashboard .students-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.librarian-dashboard .students-table th,
+.librarian-dashboard .students-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(16,24,40,0.04); }
+.librarian-dashboard .students-table thead th { font-weight: 800; color: #2c3e50; }
+
+.librarian-dashboard .no-results { padding: 20px; color: var(--muted); text-align: center; }
+
+.librarian-dashboard .btn-download-small { background: linear-gradient(90deg,#06b6d4,#2b9cdb); color: #fff; padding: 6px 10px; border-radius: 6px; }
+
+/* Empty state */
+.librarian-dashboard .empty-state { padding: 24px; background: rgba(255,255,255,0.6); border-radius: 8px; text-align: center; }
+
+/* Accessibility focus */
+.librarian-dashboard button:focus, .librarian-dashboard a:focus, .librarian-dashboard input:focus { outline: none; box-shadow: 0 0 0 4px rgba(3,102,214,0.12); border-radius: 8px; }
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .librarian-dashboard .requests-grid { grid-template-columns: 1fr; }
+    .librarian-dashboard .students-table-container { padding: 8px; }
+}
+
+@media (max-width: 480px) {
+    .librarian-dashboard { padding: 12px; }
+    .librarian-dashboard .tab-btn { width: 100%; }
+    .librarian-dashboard .request-actions { flex-direction: column; }
+    .librarian-dashboard .btn-download-small { width: auto; }
+}

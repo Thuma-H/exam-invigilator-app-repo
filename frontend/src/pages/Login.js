@@ -1,7 +1,7 @@
 // src/pages/Login.js - Login page component
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/api';
+import { login } from '../services/apiService';
 
 function Login({ setAuth }) {
     const [username, setUsername] = useState('');
