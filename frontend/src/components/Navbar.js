@@ -29,6 +29,9 @@ function Navbar() {
                 <button onClick={() => navigate('/barcodes')}>
                     📊 Student Barcodes
                 </button>
+                <button onClick={() => navigate('/register-student')}>
+                    ➕ Register Student
+                </button>
             </div>
         </nav>
     );
