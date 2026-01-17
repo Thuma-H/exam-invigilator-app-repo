@@ -26,18 +26,30 @@ public class Student {
     @Column(nullable = false)
     private String program; // e.g., "Computer Science"
 
+    @Column(nullable = true)
+    private String email;
+
+    @Column(name = "verified", nullable = false)
+    private Boolean verified = false;
+
+    @Column(name = "registration_date")
+    private java.time.LocalDateTime registrationDate;
+
 //    // Many-to-Many relationship with exams (a student can take multiple exams)
 //    @ManyToMany(mappedBy = "students")
 //    @JsonBackReference
 //    private List<Exam> exams = new ArrayList<>();
 
     // Constructors
-    public Student() {}
+    public Student() {
+        this.registrationDate = java.time.LocalDateTime.now();
+    }
 
     public Student(String studentId, String fullName, String program) {
         this.studentId = studentId;
         this.fullName = fullName;
         this.program = program;
+        this.registrationDate = java.time.LocalDateTime.now();
     }
 
     // Getters and Setters
@@ -71,6 +83,30 @@ public class Student {
 
     public void setProgram(String program) {
         this.program = program;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public java.time.LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(java.time.LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
 //    public List<Exam> getExams() {

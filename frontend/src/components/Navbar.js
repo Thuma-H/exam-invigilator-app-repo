@@ -1,11 +1,17 @@
 // src/components/Navbar.js - Navigation bar component
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../services/apiService';
 
 function Navbar() {
     const navigate = useNavigate();
+    const location = useLocation();
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    const role = sessionStorage.getItem('role');
+
+    // Check if we're on the librarian dashboard
+    const isLibrarianDashboard = location.pathname === '/librarian';
+    const isLibrarian = role === 'LIBRARIAN';
 
     const handleLogout = async () => {
         try {
@@ -19,21 +25,42 @@ function Navbar() {
     };
 
     return (
-        <nav className="navbar">
-            <h1>📋 Exam Invigilator System</h1>
-            <div className="navbar-user">
-                <span>Welcome, <strong>{user.fullName}</strong></span>
-                <button onClick={handleLogout} className="btn-logout">
-                    Logout
-                </button>
-                <button onClick={() => navigate('/barcodes')}>
-                    📊 Student Barcodes
-                </button>
-                <button onClick={() => navigate('/register-student')}>
-                    ➕ Register Student
-                </button>
-            </div>
-        </nav>
+        <div className="navbar-user">
+            <span>Welcome, <strong>{user.fullName}</strong> ({role})</span>
+
+            {/* Show different buttons based on role and location */}
+            {isLibrarian ? (
+                // Librarian sees: Back to Dashboard when on librarian page
+                isLibrarianDashboard ? (
+                    <button onClick={() => navigate('/register-student')}>
+                        ➕ Register Student
+                    </button>
+                ) : (
+                    <>
+                        <button onClick={() => navigate('/librarian')}>
+                            📚 Librarian Dashboard
+                        </button>
+                        <button onClick={() => navigate('/register-student')}>
+                            ➕ Register Student
+                        </button>
+                    </>
+                )
+            ) : (
+                // Invigilator sees: Standard invigilator buttons (no librarian access)
+                <>
+                    <button onClick={() => navigate('/barcodes')}>
+                        📊 Student Barcodes
+                    </button>
+                    <button onClick={() => navigate('/register-student')}>
+                        ➕ Register Student
+                    </button>
+                </>
+            )}
+
+            <button onClick={handleLogout} className="btn-logout">
+                Logout
+            </button>
+        </div>
     );
 }
 

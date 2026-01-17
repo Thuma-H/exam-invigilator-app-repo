@@ -6,7 +6,7 @@ import com.examapp.model.User;
 import com.examapp.repository.UserRepository;
 import com.examapp.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,7 +22,9 @@ public class AuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    // Use the shared PasswordEncoder bean (injected) instead of creating a new instance here
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Authenticate user and generate JWT token

@@ -86,4 +86,73 @@ public class StudentController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    /**
+     * Get pending (unverified) students
+     * GET /api/students/pending
+     */
+    @GetMapping("/pending")
+    public ResponseEntity<List<Student>> getPendingStudents() {
+        List<Student> pendingStudents = studentRepository.findByVerified(false);
+        return ResponseEntity.ok(pendingStudents);
+    }
+
+    /**
+     * Verify a student
+     * PUT /api/students/{id}/verify
+     */
+    @PutMapping("/{id}/verify")
+    public ResponseEntity verifyStudent(@PathVariable Long id) {
+        try {
+            return studentRepository.findById(id)
+                    .map(student -> {
+                        student.setVerified(true);
+                        Student updated = studentRepository.save(student);
+
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("success", true);
+                        response.put("student", updated);
+                        response.put("message", "Student verified successfully");
+
+                        return ResponseEntity.ok(response);
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error verifying student: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Send barcode email to student
+     * POST /api/students/{id}/send-barcode-email
+     */
+    @PostMapping("/{id}/send-barcode-email")
+    public ResponseEntity sendBarcodeEmail(@PathVariable Long id) {
+        try {
+            return studentRepository.findById(id)
+                    .map(student -> {
+                        if (student.getEmail() == null || student.getEmail().isEmpty()) {
+                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                    .body("Student does not have an email address");
+                        }
+
+                        emailService.sendBarcodeInfoToStudent(
+                                student.getEmail(),
+                                student.getStudentId(),
+                                student.getFullName()
+                        );
+
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("success", true);
+                        response.put("message", "Barcode email sent to " + student.getEmail());
+
+                        return ResponseEntity.ok(response);
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error sending barcode email: " + e.getMessage());
+        }
+    }
 }

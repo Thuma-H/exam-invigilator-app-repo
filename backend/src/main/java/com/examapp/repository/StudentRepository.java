@@ -41,4 +41,11 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      * @return List of matching students
      */
     List<Student> findByFullNameContainingIgnoreCase(String fullName);
+
+    /**
+     * Find students by verification status
+     * @param verified - true for verified, false for pending
+     * @return List of students with that verification status
+     */
+    List<Student> findByVerified(Boolean verified);
 }

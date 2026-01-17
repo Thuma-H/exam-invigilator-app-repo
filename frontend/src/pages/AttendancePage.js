@@ -1,7 +1,9 @@
 // src/pages/AttendancePage.js - Mark student attendance
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import apiService from '../services/apiService';
+import Navbar from '../components/Navbar';
+import BarcodeScanner from '../components/BarcodeScanner';
+import { getExamById, getStudentsForExam, getAttendanceForExam, markAttendance } from '../services/apiService';
 import './AttendancePage.css';
 import ExamTimer from '../components/ExamTimer';
 import { offlineStorage } from '../services/offlineStorage';
@@ -14,6 +16,10 @@ function AttendancePage() {
     const [attendance, setAttendance] = useState({});
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
+    const [scanMode, setScanMode] = useState(false);
+    const [manualInput, setManualInput] = useState('');
+    const [scanHistory, setScanHistory] = useState([]);
+    const manualInputRef = useRef(null);
 
     useEffect(() => {
         fetchData();
@@ -93,6 +99,73 @@ function AttendancePage() {
         }
     };
 
+    // Handle barcode scan
+    const handleBarcodeScan = async (scannedCode) => {
+        console.log('Scanned barcode:', scannedCode);
+
+        // Find student by studentId (barcode contains studentId)
+        const student = students.find(s => s.studentId === scannedCode);
+
+        if (!student) {
+            setMessage(`❌ Student ID ${scannedCode} not found in this exam`);
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        // Check if already marked
+        if (attendance[student.id]) {
+            setMessage(`⚠️ ${student.fullName} already marked as ${attendance[student.id]}`);
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        // Mark as present via scan
+        const isOnline = navigator.onLine;
+
+        try {
+            if (isOnline) {
+                await markAttendance(examId, student.id, 'PRESENT', 'SCAN');
+                setAttendance({ ...attendance, [student.id]: 'PRESENT' });
+                setMessage(`✅ ${student.fullName} marked PRESENT via scan`);
+
+                // Add to scan history
+                setScanHistory([...scanHistory, {
+                    studentId: student.studentId,
+                    name: student.fullName,
+                    time: new Date().toLocaleTimeString()
+                }]);
+            } else {
+                offlineStorage.saveAttendance(examId, student.id, 'PRESENT');
+                setAttendance({ ...attendance, [student.id]: 'PRESENT' });
+                setMessage(`📦 ${student.fullName} - Saved offline (will sync when online)`);
+            }
+
+            setTimeout(() => setMessage(''), 3000);
+        } catch (err) {
+            console.error('Error marking attendance:', err);
+            setMessage(`❌ Error marking attendance for ${student.fullName}`);
+        }
+    };
+
+    // Handle manual barcode input
+    const handleManualInput = (e) => {
+        e.preventDefault();
+        if (manualInput.trim()) {
+            handleBarcodeScan(manualInput.trim());
+            setManualInput('');
+        }
+    };
+
+    // Toggle scan mode
+    const toggleScanMode = () => {
+        setScanMode(!scanMode);
+        if (!scanMode) {
+            setTimeout(() => {
+                manualInputRef.current?.focus();
+            }, 100);
+        }
+    };
+
     if (loading) return <div><div className="loading">Loading...</div></div>;
 
     return (
@@ -116,8 +189,75 @@ function AttendancePage() {
 
                 {message && <div style={{ padding: '1rem', background: '#d4edda', color: '#155724', borderRadius: '4px', marginBottom: '1rem' }}>{message}</div>}
 
+                {/* Barcode Scanning Section */}
+                <div className="card scan-section">
+                    <div className="scan-header">
+                        <h3>📱 Attendance Marking</h3>
+                        <button
+                            className={`btn ${scanMode ? 'btn-danger' : 'btn-primary'}`}
+                            onClick={toggleScanMode}
+                        >
+                            {scanMode ? '❌ Close Scanner' : '📷 Open Scanner'}
+                        </button>
+                    </div>
+
+                    {scanMode && (
+                        <div className="scan-modes">
+                            {/* Manual Input Method */}
+                            <div className="manual-scan-section">
+                                <h4>🔤 Manual Entry / Barcode Gun</h4>
+                                <p className="scan-instruction">Type or scan student ID with barcode scanner gun</p>
+                                <form onSubmit={handleManualInput} className="manual-input-form">
+                                    <input
+                                        ref={manualInputRef}
+                                        type="text"
+                                        value={manualInput}
+                                        onChange={(e) => setManualInput(e.target.value)}
+                                        placeholder="Enter Student ID (e.g., BCS25165336)"
+                                        className="manual-input"
+                                        autoFocus
+                                    />
+                                    <button type="submit" className="btn btn-success">
+                                        ✓ Mark Present
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Camera Scanner Method */}
+                            <div className="camera-scan-section">
+                                <h4>📷 Camera Scanner</h4>
+                                <p className="scan-instruction">Use device camera to scan student ID barcode</p>
+                                <BarcodeScanner
+                                    onScan={handleBarcodeScan}
+                                    onError={(err) => setMessage(`❌ Scanner error: ${err.message}`)}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Scan History */}
+                    {scanHistory.length > 0 && (
+                        <div className="scan-history">
+                            <h4>📋 Recent Scans ({scanHistory.length})</h4>
+                            <div className="history-items">
+                                {scanHistory.slice(-5).reverse().map((scan, idx) => (
+                                    <div key={idx} className="history-item">
+                                        <span className="history-id">{scan.studentId}</span>
+                                        <span className="history-name">{scan.name}</span>
+                                        <span className="history-time">{scan.time}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Manual Attendance Table */}
                 <div className="card">
-                    <h3>Student Attendance</h3>
+                    <h3>👥 Student Attendance - Manual Override</h3>
+                    <p style={{ color: '#666', fontSize: '14px', marginBottom: '1rem' }}>
+                        Use buttons below to manually mark or change attendance status
+                    </p>
                     <table className="table">
                         <thead>
                         <tr>

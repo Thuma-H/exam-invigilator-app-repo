@@ -21,20 +21,32 @@ function Login({ setAuth }) {
 
             console.log('✅ Login successful:', response.data);
 
-            // Store token and user info
+            // Store token and user info (including role)
             sessionStorage.setItem('token', response.data.token);
             sessionStorage.setItem('user', JSON.stringify(response.data));
+            sessionStorage.setItem('role', response.data.role); // Store role separately for easy access
 
             // Verify storage
             console.log('🔑 Token stored:', sessionStorage.getItem('token')?.substring(0, 20) + '...');
             console.log('👤 User stored:', JSON.parse(sessionStorage.getItem('user')));
+            console.log('🎭 Role:', response.data.role);
 
-            // Update auth state and redirect to dashboard
+            // Update auth state
             setAuth(true);
-            navigate('/');
+
+            // Redirect based on role
+            if (response.data.role === 'LIBRARIAN') {
+                console.log('📚 Redirecting to Librarian Dashboard');
+                navigate('/librarian');
+            } else {
+                console.log('📋 Redirecting to Invigilator Dashboard');
+                navigate('/');
+            }
         } catch (err) {
             console.error('❌ Login failed:', err);
-            setError(err.response?.data || 'Login failed. Please check your credentials.');
+            // fetch throws Error(message) from apiService; prefer err.message, fall back to axios-style err.response.data
+            const message = err?.message || err?.response?.data || 'Login failed. Please check your credentials.';
+            setError(message);
         } finally {
             setLoading(false);
         }
@@ -81,9 +93,11 @@ function Login({ setAuth }) {
                 </form>
 
                 <div style={{ marginTop: '1rem', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
-                    <p>Default credentials:</p>
-                    <p><strong>Username:</strong> invigilator1</p>
-                    <p><strong>Password:</strong> password123</p>
+                    <p><strong>Invigilator Credentials:</strong></p>
+                    <p>Username: invigilator1 | Password: password123</p>
+                    <p style={{ marginTop: '0.5rem' }}><strong>Librarian Credentials:</strong></p>
+                    <p>Username: librarian1 | Password: password123</p>
+                    <p>Username: librarian2 | Password: password321</p>
                 </div>
             </div>
         </div>

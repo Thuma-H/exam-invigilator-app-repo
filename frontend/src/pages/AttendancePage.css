@@ -49,9 +49,158 @@
     background-color: #efe;
     color: #2a7;
     padding: 15px 20px;
-    border-radius: 8px;
+}
+
+/* Barcode Scanning Section */
+.scan-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.scan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
-    border-left: 4px solid #2a7;
+}
+
+.scan-header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.scan-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.manual-scan-section,
+.camera-scan-section {
+    background: white;
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.manual-scan-section h4,
+.camera-scan-section h4 {
+    margin: 0 0 10px 0;
+    color: #667eea;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.scan-instruction {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.manual-input-form {
+    display: flex;
+    gap: 10px;
+}
+
+.manual-input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.manual-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.manual-input::placeholder {
+    color: #999;
+}
+
+/* Scan History */
+.scan-history {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.scan-history h4 {
+    margin: 0 0 15px 0;
+    color: #667eea;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.history-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns: 150px 1fr 100px;
+    gap: 15px;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #27ae60;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.history-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.history-id {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #667eea;
+    font-size: 14px;
+}
+
+.history-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.history-time {
+    color: #666;
+    font-size: 13px;
+    text-align: right;
+}
+
+/* Responsive Design for Scan Section */
+@media (max-width: 768px) {
+    .scan-modes {
+        grid-template-columns: 1fr;
+    }
+
+    .history-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .history-time {
+        text-align: left;
+    }
+
+    .manual-input-form {
+        flex-direction: column;
+    }
 }
 
 .students-list {

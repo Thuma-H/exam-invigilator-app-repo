@@ -1,7 +1,7 @@
 // src/pages/ReportsPage.js - View attendance and incident reports
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import apiService from '../services/apiService';
+import { getExamById, getAttendanceSummary, getIncidentCount } from '../services/apiService';
 
 function ReportsPage() {
     const { examId } = useParams();

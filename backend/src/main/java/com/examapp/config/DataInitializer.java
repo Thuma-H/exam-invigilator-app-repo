@@ -1,8 +1,10 @@
 package com.examapp.config;
 
+import com.examapp.model.Course;
 import com.examapp.model.Exam;
 import com.examapp.model.Student;
 import com.examapp.model.User;
+import com.examapp.repository.CourseRepository;
 import com.examapp.repository.ExamRepository;
 import com.examapp.repository.StudentRepository;
 import com.examapp.repository.UserRepository;
@@ -33,6 +35,9 @@ public class DataInitializer implements CommandLineRunner {
     private StudentRepository studentRepository;
 
     @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -43,6 +48,9 @@ public class DataInitializer implements CommandLineRunner {
 
             // Create default users
             createUsers();
+
+            // Create sample courses
+            createCourses();
 
             // Create sample students
             createStudents();
@@ -58,9 +66,10 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     /**
-     * Create default users (invigilators)
+     * Create default users (invigilators and librarians)
      */
     private void createUsers() {
+        // Invigilators
         User invigilator1 = new User();
         invigilator1.setUsername("invigilator1");
         invigilator1.setPassword(passwordEncoder.encode("password123"));
@@ -75,6 +84,22 @@ public class DataInitializer implements CommandLineRunner {
         invigilator2.setRole("INVIGILATOR");
         userRepository.save(invigilator2);
 
+        // Librarians
+        User librarian1 = new User();
+        librarian1.setUsername("librarian1");
+        librarian1.setPassword(passwordEncoder.encode("password123"));
+        librarian1.setFullName("Librarian One");
+        librarian1.setRole("LIBRARIAN");
+        userRepository.save(librarian1);
+
+        User librarian2 = new User();
+        librarian2.setUsername("librarian2");
+        librarian2.setPassword(passwordEncoder.encode("password321"));
+        librarian2.setFullName("Librarian Two");
+        librarian2.setRole("LIBRARIAN");
+        userRepository.save(librarian2);
+
+        // Admin
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("admin123"));
@@ -82,7 +107,22 @@ public class DataInitializer implements CommandLineRunner {
         admin.setRole("ADMIN");
         userRepository.save(admin);
 
-        System.out.println("✓ Created 3 users (2 invigilators, 1 admin)");
+        System.out.println("✓ Created 5 users (2 invigilators, 2 librarians, 1 admin)");
+    }
+
+    /**
+     * Create sample courses
+     */
+    private void createCourses() {
+        Course c1 = new Course("BSC121", "Software Engineering", "Computer Science", 3, "Dr. John Smith");
+        Course c2 = new Course("BSC122", "Database Systems", "Computer Science", 3, "Dr. Jane Doe");
+        Course c3 = new Course("BSC123", "Data Structures and Algorithms", "Computer Science", 4, "Dr. Robert Johnson");
+        Course c4 = new Course("BSC124", "Computer Networks", "Information Technology", 3, "Dr. Emily Brown");
+        Course c5 = new Course("BSC125", "Web Development", "Software Engineering", 3, "Dr. Michael Davis");
+
+        courseRepository.saveAll(Arrays.asList(c1, c2, c3, c4, c5));
+
+        System.out.println("✓ Created 5 courses");
     }
 
 

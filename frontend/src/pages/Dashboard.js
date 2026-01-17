@@ -18,8 +18,10 @@ const Dashboard = () => {
     const loadExams = async () => {
         try {
             setLoading(true);
-            const data = await apiService.getMyExams();
-            setExams(data);
+            const response = await apiService.getMyExams();
+            // apiService returns { data: ... }
+            const payload = response && response.data ? response.data : response;
+            setExams(Array.isArray(payload) ? payload : []);
             setError('');
         } catch (err) {
             setError('Failed to load exams: ' + err.message);
@@ -62,13 +64,6 @@ const Dashboard = () => {
                     <p className="welcome-text">Welcome, <strong>{username}</strong></p>
                 </div>
                 <div className="header-actions">
-                    {/* NEW: Librarian Dashboard Button */}
-                    <button
-                        className="btn-librarian"
-                        onClick={() => navigate('/librarian')}
-                    >
-                        📚 Librarian
-                    </button>
                     <button className="btn-logout" onClick={handleLogout}>
                         Logout
                     </button>
