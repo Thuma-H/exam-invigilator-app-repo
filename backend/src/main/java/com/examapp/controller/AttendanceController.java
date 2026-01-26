@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/attendance")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*") // Allow all origins for network testing
 public class AttendanceController {
 
     @Autowired

@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/exams")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*") // Allow all origins for network testing
 public class ExamController {
 
     @Autowired
