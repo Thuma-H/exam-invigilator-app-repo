@@ -8,6 +8,7 @@ import com.examapp.repository.ExamRepository;
 import com.examapp.repository.IncidentRepository;
 import com.examapp.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,8 @@ import java.util.List;
 /**
  * IncidentService - handles incident reporting and retrieval.
  * Manages recording and filtering exam incidents.
+ *
+ * NEW: Sends notification emails when incidents are reported
  */
 @Service
 public class IncidentService {
@@ -28,6 +31,12 @@ public class IncidentService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${librarian.email}")
+    private String adminEmail; // Admin/coordinator email for incident notifications
 
     /**
      * Report a new incident during an exam
@@ -58,7 +67,12 @@ public class IncidentService {
                 reportedBy
         );
 
-        return incidentRepository.save(incident);
+        Incident savedIncident = incidentRepository.save(incident);
+
+        // NEW: Send notification to admin/coordinator (no details, just alert)
+        emailService.notifyIncidentReported(adminEmail, exam.getId());
+
+        return savedIncident;
     }
 
     /**

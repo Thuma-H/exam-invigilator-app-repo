@@ -7,7 +7,13 @@ import java.util.List;
 
 /**
  * Student entity represents students enrolled in exams.
- * Stores student identification and academic program details.
+ *
+ * ⚠️ READ-ONLY MODEL: Students are managed by the university system.
+ * This app only READS student data for attendance tracking.
+ * Do NOT create/update/delete students through this app.
+ *
+ * Barcode Security: Barcodes contain ONLY student_id (e.g., "BCS25165336")
+ * All other data is fetched from database when barcode is scanned.
  */
 @Entity
 @Table(name = "students")

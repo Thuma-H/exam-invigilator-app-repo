@@ -2,17 +2,21 @@ package com.examapp.controller;
 
 import com.examapp.model.Student;
 import com.examapp.repository.StudentRepository;
-import com.examapp.service.BarcodeService;
-import com.examapp.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * StudentController - READ-ONLY endpoints for student data
+ *
+ * ⚠️ IMPORTANT: Students are managed by the university system.
+ * This app only READS student data for attendance tracking.
+ *
+ * CREATE/UPDATE/DELETE operations have been removed.
+ * Students must be added to the database via DataInitializer or direct DB import.
+ */
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
@@ -21,138 +25,54 @@ public class StudentController {
     @Autowired
     private StudentRepository studentRepository;
 
-    @Autowired
-    private BarcodeService barcodeService;
-
-    @Autowired
-    private EmailService emailService;
-
     /**
-     * Register a new student
-     * POST /api/students
-     * Body: {"studentId": "BCS25165344", "fullName": "John Doe", "program": "Computer Science"}
-     */
-    @PostMapping
-    public ResponseEntity registerStudent(@RequestBody Student student) {
-        try {
-            // Check if student ID already exists
-            if (studentRepository.existsByStudentId(student.getStudentId())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Student ID already exists");
-            }
-
-            // Save student
-            Student savedStudent = studentRepository.save(student);
-
-            // Generate barcode
-            barcodeService.generateBarcode(student.getStudentId());
-
-            // Send email to librarian
-            emailService.notifyNewStudent(
-                    student.getStudentId(),
-                    student.getFullName(),
-                    student.getProgram()
-            );
-
-            Map response = new HashMap<>();
-            response.put("success", true);
-            response.put("student", savedStudent);
-            response.put("message", "Student registered successfully. Email sent to librarian.");
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error registering student: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Get all students
+     * Get all students (READ-ONLY)
      * GET /api/students
      */
     @GetMapping
-    public ResponseEntity<List> getAllStudents() {
+    public ResponseEntity<List<Student>> getAllStudents() {
         return ResponseEntity.ok(studentRepository.findAll());
     }
 
     /**
-     * Search student by ID
+     * Search student by ID (READ-ONLY)
      * GET /api/students/search?studentId=BCS25165336
      */
     @GetMapping("/search")
-    public ResponseEntity searchStudent(@RequestParam String studentId) {
+    public ResponseEntity<?> searchStudent(@RequestParam String studentId) {
         return studentRepository.findByStudentId(studentId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Get pending (unverified) students
-     * GET /api/students/pending
+     * Get student by database ID (READ-ONLY)
+     * GET /api/students/{id}
      */
-    @GetMapping("/pending")
-    public ResponseEntity<List<Student>> getPendingStudents() {
-        List<Student> pendingStudents = studentRepository.findByVerified(false);
-        return ResponseEntity.ok(pendingStudents);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getStudentById(@PathVariable Long id) {
+        return studentRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
-     * Verify a student
-     * PUT /api/students/{id}/verify
+     * Search students by name (READ-ONLY)
+     * GET /api/students/search-by-name?name=Alice
      */
-    @PutMapping("/{id}/verify")
-    public ResponseEntity verifyStudent(@PathVariable Long id) {
-        try {
-            return studentRepository.findById(id)
-                    .map(student -> {
-                        student.setVerified(true);
-                        Student updated = studentRepository.save(student);
-
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("student", updated);
-                        response.put("message", "Student verified successfully");
-
-                        return ResponseEntity.ok(response);
-                    })
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error verifying student: " + e.getMessage());
-        }
+    @GetMapping("/search-by-name")
+    public ResponseEntity<List<Student>> searchByName(@RequestParam String name) {
+        List<Student> students = studentRepository.findByFullNameContainingIgnoreCase(name);
+        return ResponseEntity.ok(students);
     }
 
     /**
-     * Send barcode email to student
-     * POST /api/students/{id}/send-barcode-email
+     * Get students by program (READ-ONLY)
+     * GET /api/students/program?program=Computer Science
      */
-    @PostMapping("/{id}/send-barcode-email")
-    public ResponseEntity sendBarcodeEmail(@PathVariable Long id) {
-        try {
-            return studentRepository.findById(id)
-                    .map(student -> {
-                        if (student.getEmail() == null || student.getEmail().isEmpty()) {
-                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body("Student does not have an email address");
-                        }
-
-                        emailService.sendBarcodeInfoToStudent(
-                                student.getEmail(),
-                                student.getStudentId(),
-                                student.getFullName()
-                        );
-
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("success", true);
-                        response.put("message", "Barcode email sent to " + student.getEmail());
-
-                        return ResponseEntity.ok(response);
-                    })
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error sending barcode email: " + e.getMessage());
-        }
+    @GetMapping("/program")
+    public ResponseEntity<List<Student>> getByProgram(@RequestParam String program) {
+        List<Student> students = studentRepository.findByProgram(program);
+        return ResponseEntity.ok(students);
     }
 }

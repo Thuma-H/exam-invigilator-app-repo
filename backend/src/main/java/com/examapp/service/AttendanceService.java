@@ -17,6 +17,8 @@ import java.util.List;
 /**
  * AttendanceService - handles attendance tracking and reporting.
  * Manages marking attendance and generating summaries.
+ *
+ * NEW: Sends notification emails when attendance is marked
  */
 @Service
 public class AttendanceService {
@@ -29,6 +31,9 @@ public class AttendanceService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Mark student attendance for an exam
@@ -59,7 +64,14 @@ public class AttendanceService {
                 request.getMethod()
         );
 
-        return attendanceRepository.save(attendance);
+        Attendance savedAttendance = attendanceRepository.save(attendance);
+
+        // NEW: Send notification email to student (if they have email)
+        if (student.getEmail() != null && !student.getEmail().isEmpty()) {
+            emailService.notifyAttendanceMarked(student.getEmail(), exam.getId());
+        }
+
+        return savedAttendance;
     }
 
     /**
