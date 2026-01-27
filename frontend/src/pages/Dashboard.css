@@ -1,197 +1,427 @@
-/* src/pages/Dashboard.css */
+/* src/pages/Dashboard.css - Invigilator Dashboard Styles */
 .dashboard-container {
-    min-height: 100vh;
+    min-height: calc(100vh - 60px);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
+    padding: 2rem;
 }
 
-.dashboard-header {
-    background: white;
-    border-radius: 10px;
-    padding: 25px 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.dashboard-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Page Hero Section */
+.page-hero {
+    background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 100%);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.header-content h1 {
-    margin: 0 0 5px 0;
-    color: #2c3e50;
-    font-size: 28px;
+.page-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
 }
 
-.welcome-text {
-    margin: 0;
-    color: #666;
-    font-size: 14px;
-}
-
-.header-actions {
+.hero-content {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
 }
 
-/* NEW: Librarian Button */
-.btn-librarian {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+.hero-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.btn-librarian:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.btn-logout {
-    background-color: #dc3545;
+.hero-text h1 {
+    margin: 0 0 0.5rem 0;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-.btn-logout:hover {
-    background-color: #c82333;
-    transform: translateY(-2px);
+.hero-subtitle {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 400;
 }
 
-.loading {
+.hero-stats {
+    display: flex;
+    gap: 1.5rem;
+    z-index: 1;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.25rem 1.75rem;
     text-align: center;
-    padding: 50px;
+    min-width: 120px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
     color: white;
-    font-size: 18px;
+    line-height: 1;
+    margin-bottom: 0.5rem;
 }
 
-.error-message {
-    background-color: #fee;
-    color: #c33;
-    padding: 15px 20px;
+.stat-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: white;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Error Banner */
+.error-banner {
+    background-color: #FEE;
+    color: #C33;
+    padding: 1rem 1.5rem;
     border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #c33;
+    margin-bottom: 2rem;
+    border-left: 4px solid #E74C3C;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
+.error-icon {
+    font-size: 1.5rem;
+}
+
+/* Exams Section */
 .exams-section {
     background: white;
-    border-radius: 10px;
-    padding: 30px;
+    border-radius: 12px;
+    padding: 2rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .exams-section h2 {
-    margin: 0 0 25px 0;
-    color: #2c3e50;
-    font-size: 24px;
+    margin: 0 0 1.5rem 0;
+    color: #2C3E50;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
+/* No Exams State */
 .no-exams {
     text-align: center;
-    padding: 60px 20px;
-    color: #999;
+    padding: 4rem 2rem;
+    color: #95A5A6;
+}
+
+.no-exams-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 
 .no-exams p {
-    font-size: 18px;
-    margin: 0;
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0;
+    color: #7F8C8D;
 }
 
+.no-exams-hint {
+    font-size: 0.9rem;
+    color: #95A5A6;
+}
+
+/* Exams Grid */
 .exams-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
+    gap: 1.5rem;
 }
 
+/* Exam Card */
 .exam-card {
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 20px;
+    border: 2px solid #ECF0F1;
+    border-radius: 12px;
+    padding: 1.5rem;
     background: white;
     transition: all 0.3s ease;
 }
 
 .exam-card:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    border-color: #3498DB;
 }
 
+/* Exam Header */
 .exam-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ECF0F1;
 }
 
-.exam-header h3 {
+.exam-title h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2C3E50;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.course-name {
     margin: 0;
-    color: #2c3e50;
-    font-size: 22px;
+    color: #7F8C8D;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
+/* Status Badge */
 .exam-status {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
+    padding: 0.4rem 0.9rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
-.exam-status.SCHEDULED {
-    background-color: #d1ecf1;
-    color: #0c5460;
+.status-scheduled {
+    background-color: #D6EAF8;
+    color: #1F618D;
 }
 
-.exam-status.ONGOING {
-    background-color: #fff3cd;
-    color: #856404;
+.status-ongoing {
+    background-color: #FCF3CF;
+    color: #7D6608;
 }
 
-.exam-status.COMPLETED {
-    background-color: #d4edda;
-    color: #155724;
+.status-completed {
+    background-color: #D5F4E6;
+    color: #186A3B;
 }
 
+/* Exam Details */
 .exam-details {
-    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-.exam-name {
-    color: #666;
-    font-size: 16px;
-    margin-bottom: 15px;
-}
-
-.exam-info {
+.detail-item {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.25rem;
 }
 
-.info-item {
+.detail-label {
+    font-size: 0.75rem;
+    color: #95A5A6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    color: #2C3E50;
+    font-weight: 600;
+}
+
+/* Exam Actions */
+.exam-actions {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #555;
-    font-size: 14px;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.info-item .icon {
-    font-size: 16px;
+.btn-action {
+    padding: 0.85rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-action:active {
+    transform: translateY(0);
+}
+
+.btn-attendance {
+    background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+    color: white;
+}
+
+.btn-attendance:hover {
+    background: linear-gradient(135deg, #229954 0%, #1E8449 100%);
+}
+
+.btn-incident {
+    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    color: white;
+}
+
+.btn-incident:hover {
+    background: linear-gradient(135deg, #C0392B 0%, #A93226 100%);
+}
+
+.btn-reports {
+    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+    color: white;
+}
+
+.btn-reports:hover {
+    background: linear-gradient(135deg, #2980B9 0%, #1F6391 100%);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .dashboard-content {
+        padding: 0;
+    }
+
+    .page-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .hero-content {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .hero-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .hero-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero-stats {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .stat-card {
+        flex: 1;
+        min-width: auto;
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.75rem;
+    }
+
+    .exams-section {
+        padding: 1.5rem;
+    }
+
+    .exams-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .exam-card {
+        padding: 1.25rem;
+    }
+
+    .exam-title h3 {
+        font-size: 1.25rem;
+    }
+
+    .exam-details {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .btn-action {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+    }
 }
 
 .exam-actions {
