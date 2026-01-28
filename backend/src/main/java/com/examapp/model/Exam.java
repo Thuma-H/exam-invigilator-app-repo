@@ -1,7 +1,8 @@
 package com.examapp.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "exams")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Exam {
 
     @Id
@@ -37,18 +39,19 @@ public class Exam {
     @Column(nullable = false)
     private Integer duration; // Duration in minutes
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "invigilator_id", nullable = false)
+    @JsonIgnoreProperties({"password", "authorities"})
     private User invigilator; // Which invigilator is assigned
 
     // Many-to-Many relationship with students
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "exam_students",
             joinColumns = @JoinColumn(name = "exam_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-
+    @JsonIgnore
     private List<Student> students = new ArrayList<>();
 
     // Constructors
