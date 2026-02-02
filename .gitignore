@@ -1,0 +1,13 @@
+# IntelliJ project files
+.idea/
+
+# Build outputs
+backend/target/
+frontend/build/
+
+# Node dependencies
+frontend/node_modules/
+
+# Logs and environment
+*.log
+.env
