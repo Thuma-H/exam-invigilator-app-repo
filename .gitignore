@@ -1,0 +1,39 @@
+# =============================================
+# Exam Invigilator App – .gitignore
+# =============================================
+
+# --- Java / Maven build output ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# --- IntelliJ IDEA project files ---
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# --- Environment / secrets ---
+.env
+backend/.env
+
+# --- SQLite database (auto-generated on first run) ---
+examdb.db
+*.db
+
+# --- Barcode images (auto-generated at runtime) ---
+barcodes/
+
+# --- OS metadata ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Spring Boot DevTools restart file ---
+.spring-boot-devtools.properties
