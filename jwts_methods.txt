@@ -1,0 +1,9 @@
+Compiled from "Jwts.java"
+public final class io.jsonwebtoken.Jwts {
+  public static io.jsonwebtoken.Jwts$HeaderBuilder header();
+  public static io.jsonwebtoken.ClaimsBuilder claims();
+  public static io.jsonwebtoken.Claims claims(java.util.Map<java.lang.String, java.lang.Object>);
+  public static io.jsonwebtoken.JwtBuilder builder();
+  public static io.jsonwebtoken.JwtParserBuilder parser();
+  static java.lang.Object access$000(io.jsonwebtoken.lang.Registry, java.lang.String);
+}

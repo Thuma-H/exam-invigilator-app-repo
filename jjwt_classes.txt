@@ -1,0 +1,2 @@
+io/jsonwebtoken/JwtParser.class
+io/jsonwebtoken/JwtParserBuilder.class
