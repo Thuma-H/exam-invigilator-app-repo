@@ -28,42 +28,56 @@ public class StudentController {
     private EmailService emailService;
 
     /**
-     * Register a new student
+     * Register a new student or return existing
      * POST /api/students
-     * Body: {"studentId": "BCS25165344", "fullName": "John Doe", "program": "Computer Science"}
+     * Body: {"studentId": "BCS25165344", "fullName": "John Doe", "program": "Computer Science", "email": "john@example.com"}
      */
     @PostMapping
     public ResponseEntity registerStudent(@RequestBody Student student) {
         try {
-            // Check if student ID already exists
-            if (studentRepository.existsByStudentId(student.getStudentId())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Student ID already exists");
+            // Check if student ID already exists - return existing student
+            java.util.Optional<Student> existingStudent = studentRepository.findByStudentId(student.getStudentId());
+            if (existingStudent.isPresent()) {
+                // Return existing student with 200 OK
+                return ResponseEntity.ok(existingStudent.get());
+            }
+
+            // Set default values for new student
+            if (student.getVerified() == null) {
+                student.setVerified(false);
+            }
+            if (student.getRegistrationDate() == null) {
+                student.setRegistrationDate(java.time.LocalDateTime.now());
             }
 
             // Save student
             Student savedStudent = studentRepository.save(student);
 
-            // Generate barcode
-            barcodeService.generateBarcode(student.getStudentId());
+            // Generate barcode (non-blocking)
+            try {
+                barcodeService.generateBarcode(student.getStudentId());
+            } catch (Exception e) {
+                System.err.println("Warning: Could not generate barcode: " + e.getMessage());
+            }
 
-            // Send email to librarian
-            emailService.notifyNewStudent(
-                    student.getStudentId(),
-                    student.getFullName(),
-                    student.getProgram()
-            );
+            // Send email to librarian (non-blocking)
+            try {
+                emailService.notifyNewStudent(
+                        student.getStudentId(),
+                        student.getFullName(),
+                        student.getProgram()
+                );
+            } catch (Exception e) {
+                System.err.println("Warning: Could not send email: " + e.getMessage());
+            }
 
-            Map response = new HashMap<>();
-            response.put("success", true);
-            response.put("student", savedStudent);
-            response.put("message", "Student registered successfully. Email sent to librarian.");
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            // Return new student with 201 CREATED
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error registering student: " + e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error registering student: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 

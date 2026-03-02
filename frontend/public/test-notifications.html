@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications Debugger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #9B59B6; margin-top: 0; }
+        button {
+            background: #9B59B6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover { background: #8E44AD; }
+        button.danger { background: #e74c3c; }
+        button.danger:hover { background: #c0392b; }
+        #output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .section h3 { margin-top: 0; color: #2c3e50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Notifications Debug Tool</h1>
+        <p>Test localStorage notifications</p>
+
+        <div class="section">
+            <h3>📊 View</h3>
+            <button onclick="viewNotifications()">View Notifications</button>
+            <button onclick="countNotifications()">Count</button>
+        </div>
+
+        <div class="section">
+            <h3>➕ Add Test</h3>
+            <button onclick="addTestNotification()">Add 1 Test</button>
+            <button onclick="addMultipleNotifications()">Add 3 Tests</button>
+        </div>
+
+        <div class="section">
+            <h3>🗑️ Clear</h3>
+            <button class="danger" onclick="clearNotifications()">Clear All</button>
+        </div>
+
+        <div id="output">Click a button to test.</div>
+    </div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML = `[${timestamp}] ${message}\n\n${output.innerHTML}`;
+        }
+
+        function viewNotifications() {
+            const stored = localStorage.getItem('notifications');
+            if (!stored) {
+                log('⚠️ No notifications in localStorage');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(stored);
+                log(`✅ Found ${parsed.length} notification(s):\n\n${JSON.stringify(parsed, null, 2)}`);
+            } catch (e) {
+                log(`❌ Error: ${e.message}`);
+            }
+        }
+
+        function countNotifications() {
+            const stored = localStorage.getItem('notifications');
+            if (!stored) {
+                log('📊 Count: 0');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(stored);
+                log(`📊 Count: ${parsed.length}`);
+            } catch (e) {
+                log(`❌ Error: ${e.message}`);
+            }
+        }
+
+        function addTestNotification() {
+            const notification = {
+                id: Date.now(),
+                message: `Thuma was successfully added to BSC101 - Test Course`,
+                examName: 'BSC101 - Test Course',
+                timestamp: Date.now()
+            };
+            const existing = JSON.parse(localStorage.getItem('notifications') || '[]');
+            existing.unshift(notification);
+            localStorage.setItem('notifications', JSON.stringify(existing));
+            log(`✅ Added test notification! Total: ${existing.length}`);
+        }
+
+        function addMultipleNotifications() {
+            const existing = JSON.parse(localStorage.getItem('notifications') || '[]');
+            for (let i = 0; i < 3; i++) {
+                const notification = {
+                    id: Date.now() + i,
+                    message: `Student ${i+1} added to Course ${i+1}`,
+                    examName: `BSC10${i+1} - Test`,
+                    timestamp: Date.now() + i
+                };
+                existing.unshift(notification);
+            }
+            localStorage.setItem('notifications', JSON.stringify(existing));
+            log(`✅ Added 3! Total: ${existing.length}`);
+        }
+
+        function clearNotifications() {
+            localStorage.removeItem('notifications');
+            log('🗑️ Cleared all notifications');
+        }
+
+        window.onload = function() {
+            log('🚀 Debugger ready.');
+            // Auto-check on load
+            const stored = localStorage.getItem('notifications');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    log(`📊 Current count: ${parsed.length}`);
+                } catch (e) {
+                    log('⚠️ localStorage has invalid data');
+                }
+            } else {
+                log('⚠️ No notifications found');
+            }
+        };
+    </script>
+</body>
+</html>

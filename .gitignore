@@ -11,3 +11,4 @@ frontend/node_modules/
 # Logs and environment
 *.log
 .env
+/TEAM_WORKFLOW_GUIDE.md

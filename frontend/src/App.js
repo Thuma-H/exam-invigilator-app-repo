@@ -1,21 +1,32 @@
 // src/App.js - Main application component with routing
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import LibrarianDashboard from './pages/LibrarianDashboard';
+import NotificationsPage from './pages/NotificationsPage';
 import AttendancePage from './pages/AttendancePage';
 import IncidentPage from './pages/IncidentPage';
 import ReportsPage from './pages/ReportsPage';
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-    // Check if user is logged in on component mount
-    useEffect(() => {
-        const token = sessionStorage.getItem('token');
-        setIsAuthenticated(!!token);
-    }, []);
+    // Initialize auth state immediately from storage (prevents redirect flash on refresh)
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        // Validate token format — a JWT must have exactly 2 periods
+        if (token && (token.split('.').length - 1) === 2) {
+            return true;
+        }
+        // Bad or missing token — clear everything
+        if (token) {
+            console.warn('Invalid token format detected — clearing session');
+            sessionStorage.clear();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('role');
+        }
+        return false;
+    });
 
     // Protected Route wrapper
     const ProtectedRoute = ({ children }) => {
@@ -24,7 +35,7 @@ function App() {
 
     // Librarian-only Route wrapper
     const LibrarianRoute = ({ children }) => {
-        const role = sessionStorage.getItem('role');
+        const role = sessionStorage.getItem('role') || localStorage.getItem('role');
         if (!isAuthenticated) {
             return <Navigate to="/login" />;
         }
@@ -45,6 +56,9 @@ function App() {
                     <button
                         onClick={() => {
                             sessionStorage.clear();
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
+                            localStorage.removeItem('role');
                             window.location.href = '/login';
                         }}
                         style={{
@@ -76,6 +90,7 @@ function App() {
                 {/* Protected Routes */}
                 <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/librarian" element={<LibrarianRoute><LibrarianDashboard /></LibrarianRoute>} />
+                <Route path="/notifications" element={<LibrarianRoute><NotificationsPage /></LibrarianRoute>} />
                 <Route path="/attendance/:examId" element={<ProtectedRoute><AttendancePage /></ProtectedRoute>} />
                 <Route path="/incident/:examId" element={<ProtectedRoute><IncidentPage /></ProtectedRoute>} />
                 <Route path="/reports/:examId" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />

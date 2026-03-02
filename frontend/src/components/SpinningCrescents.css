@@ -1,0 +1,174 @@
+/* SpinningCrescents.css — Animated spinning crescent arcs background */
+
+.spinning-crescents-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Base crescent: a circle with a transparent arc cut via border trick */
+.crescent {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: transparent;
+}
+
+/* ─── Crescent 1: Large outer, slow clockwise ─── */
+.crescent-1 {
+    width: 600px;
+    height: 600px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 2.5px;
+    border-top-color: rgba(167, 139, 250, 0.25);
+    border-right-color: rgba(139, 92, 246, 0.15);
+    animation: spin-clockwise 25s linear infinite;
+    filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.25))
+            drop-shadow(0 0 20px rgba(139, 92, 246, 0.12));
+    box-shadow: 0 0 15px rgba(167, 139, 250, 0.08),
+                inset 0 0 15px rgba(167, 139, 250, 0.04);
+}
+
+/* ─── Crescent 2: Medium, counter-clockwise ─── */
+.crescent-2 {
+    width: 420px;
+    height: 420px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 2px;
+    border-bottom-color: rgba(126, 87, 194, 0.28);
+    border-left-color: rgba(167, 139, 250, 0.14);
+    animation: spin-counter 18s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(126, 87, 194, 0.3))
+            drop-shadow(0 0 25px rgba(167, 139, 250, 0.1));
+    box-shadow: 0 0 18px rgba(126, 87, 194, 0.1),
+                inset 0 0 18px rgba(126, 87, 194, 0.05);
+}
+
+/* ─── Crescent 3: Small inner, faster clockwise ─── */
+.crescent-3 {
+    width: 260px;
+    height: 260px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 2px;
+    border-top-color: rgba(196, 181, 253, 0.32);
+    border-left-color: rgba(139, 92, 246, 0.12);
+    animation: spin-clockwise 12s linear infinite;
+    filter: drop-shadow(0 0 12px rgba(196, 181, 253, 0.35))
+            drop-shadow(0 0 30px rgba(139, 92, 246, 0.15));
+    box-shadow: 0 0 20px rgba(196, 181, 253, 0.1),
+                inset 0 0 20px rgba(196, 181, 253, 0.06);
+}
+
+/* ─── Crescent 4: Extra-large background, very slow counter ─── */
+.crescent-4 {
+    width: 820px;
+    height: 820px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 1.5px;
+    border-right-color: rgba(42, 82, 152, 0.18);
+    border-bottom-color: rgba(126, 87, 194, 0.1);
+    animation: spin-counter 40s linear infinite;
+    filter: blur(0.5px)
+            drop-shadow(0 0 14px rgba(42, 82, 152, 0.15))
+            drop-shadow(0 0 35px rgba(126, 87, 194, 0.08));
+    box-shadow: 0 0 25px rgba(42, 82, 152, 0.06),
+                inset 0 0 25px rgba(42, 82, 152, 0.03);
+}
+
+/* ─── Crescent 5: Tiny accent, quick spin ─── */
+.crescent-5 {
+    width: 140px;
+    height: 140px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 1.5px;
+    border-top-color: rgba(196, 181, 253, 0.38);
+    border-right-color: rgba(167, 139, 250, 0.2);
+    animation: spin-clockwise 8s linear infinite;
+    filter: drop-shadow(0 0 6px rgba(196, 181, 253, 0.4))
+            drop-shadow(0 0 18px rgba(167, 139, 250, 0.2));
+    box-shadow: 0 0 12px rgba(196, 181, 253, 0.12),
+                inset 0 0 12px rgba(196, 181, 253, 0.06);
+}
+
+/* ─── Crescent 6: Wide orbit, smooth counter-clockwise ─── */
+.crescent-6 {
+    width: 520px;
+    height: 520px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 2px;
+    border-bottom-color: rgba(167, 139, 250, 0.22);
+    border-right-color: rgba(196, 181, 253, 0.14);
+    animation: spin-counter 15s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.3))
+            drop-shadow(0 0 22px rgba(196, 181, 253, 0.12));
+    box-shadow: 0 0 16px rgba(167, 139, 250, 0.09),
+                inset 0 0 16px rgba(167, 139, 250, 0.04);
+}
+
+/* ─── Keyframes ─── */
+@keyframes spin-clockwise {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes spin-counter {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+/* Glass glow — inner pulse */
+.spinning-crescents-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    height: 350px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.09) 0%, rgba(139, 92, 246, 0.04) 40%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-glow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+/* Glass glow — outer halo */
+.spinning-crescents-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 550px;
+    height: 550px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.07) 0%, rgba(126, 87, 194, 0.03) 35%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-glow-outer 10s ease-in-out infinite alternate-reverse;
+    pointer-events: none;
+}
+
+@keyframes pulse-glow {
+    0%   { opacity: 0.3; transform: translate(-50%, -50%) scale(0.85); }
+    100% { opacity: 1;   transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes pulse-glow-outer {
+    0%   { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0.2; transform: translate(-50%, -50%) scale(1.3); }
+}
