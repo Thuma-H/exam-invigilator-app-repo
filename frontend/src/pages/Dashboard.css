@@ -1,39 +1,62 @@
 /* src/pages/Dashboard.css - Invigilator Dashboard Styles */
 .dashboard-container {
     min-height: calc(100vh - 60px);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e57c2 100%);
     padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated background elements for depth */
+.dashboard-container::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(126, 87, 194, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(42, 82, 152, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* NextPhases Swirl Watermark Opacity Override */
+.dashboard-container {
+    background-color: transparent;
+    background-blend-mode: lighten;
+    opacity: 1;
 }
 
 .dashboard-content {
     max-width: 1400px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 /* Page Hero Section */
 .page-hero {
-    background: linear-gradient(135deg, rgba(30, 60, 114, 0.95) 0%, rgba(42, 82, 152, 0.95) 100%);
-    border-radius: 16px;
+    background: rgba(15, 30, 60, 0.6);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1.5px solid rgba(167, 139, 250, 0.25);
+    border-radius: 24px;
     padding: 2.5rem 2rem;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(167, 139, 250, 0.2);
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
     overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.page-hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    transform: translate(30%, -30%);
+.page-hero:hover {
+    background: rgba(15, 30, 60, 0.75);
+    border-color: rgba(167, 139, 250, 0.35);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(167, 139, 250, 0.3);
 }
 
 .hero-content {
@@ -46,15 +69,29 @@
 .hero-icon {
     width: 64px;
     height: 64px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.4),
+                0 0 20px rgba(167, 139, 250, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 32px;
+}
+
+.hero-icon:hover {
+    background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.4),
+                inset 0 1px 2px rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(167, 139, 250, 0.35);
 }
 
 .hero-text h1 {
@@ -79,19 +116,35 @@
 }
 
 .stat-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
+    background: rgba(30, 60, 114, 0.35);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
     padding: 1.25rem 1.75rem;
     text-align: center;
     min-width: 120px;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    border-radius: 16px;
 }
 
 .stat-card:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    background: rgba(30, 60, 114, 0.5);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
 .stat-value {
@@ -108,6 +161,72 @@
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+/* Clickable Active Stat Card */
+.stat-card-clickable {
+    cursor: pointer;
+    position: relative;
+}
+
+.stat-card-active {
+    border-color: rgba(46, 213, 115, 0.3) !important;
+}
+
+.stat-card-active:hover {
+    border-color: rgba(46, 213, 115, 0.5) !important;
+    background: rgba(46, 213, 115, 0.12) !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2),
+                inset 0 1px 2px rgba(46, 213, 115, 0.15),
+                0 0 20px rgba(46, 213, 115, 0.1) !important;
+}
+
+.stat-card-active .stat-value {
+    color: #2ed573;
+}
+
+.stat-pulse {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: #2ed573;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.stat-pulse::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 14px;
+    height: 14px;
+    background: rgba(46, 213, 115, 0.3);
+    border-radius: 50%;
+    animation: pulseRing 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+/* Highlight animation for scrolled-to active exam */
+.exam-card-highlight {
+    animation: cardHighlight 2s ease-out !important;
+}
+
+@keyframes cardHighlight {
+    0% { box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.6), 0 12px 40px rgba(0, 0, 0, 0.25); }
+    50% { box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.3), 0 12px 40px rgba(0, 0, 0, 0.25); }
+    100% { box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(167, 139, 250, 0.15); }
 }
 
 /* Loading Spinner */
@@ -140,12 +259,15 @@
 
 /* Error Banner */
 .error-banner {
-    background-color: #FEE;
-    color: #C33;
+    background: rgba(239, 68, 68, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    color: rgba(254, 226, 226, 0.95);
     padding: 1rem 1.5rem;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 2rem;
-    border-left: 4px solid #E74C3C;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-left: 4px solid #ef4444;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -157,41 +279,46 @@
 
 /* Exams Section */
 .exams-section {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: rgba(30, 60, 114, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .exams-section h2 {
     margin: 0 0 1.5rem 0;
-    color: #2C3E50;
+    color: white;
     font-size: 1.5rem;
     font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
 /* No Exams State */
 .no-exams {
     text-align: center;
     padding: 4rem 2rem;
-    color: #95A5A6;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .no-exams-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .no-exams p {
     font-size: 1.25rem;
     margin: 0 0 0.5rem 0;
-    color: #7F8C8D;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .no-exams-hint {
     font-size: 0.9rem;
-    color: #95A5A6;
+    color: rgba(255, 255, 255, 0.65);
 }
 
 /* Exams Grid */
@@ -203,17 +330,34 @@
 
 /* Exam Card */
 .exam-card {
-    border: 2px solid #ECF0F1;
-    border-radius: 12px;
-    padding: 1.5rem;
-    background: white;
-    transition: all 0.3s ease;
+    background: rgba(25, 50, 100, 0.45);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1.5px solid rgba(167, 139, 250, 0.2);
+    border-radius: 18px;
+    padding: 1.75rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(167, 139, 250, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.exam-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.3), transparent);
+    border-radius: 18px;
 }
 
 .exam-card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
-    border-color: #3498DB;
+    background: rgba(25, 50, 100, 0.6);
+    border-color: rgba(167, 139, 250, 0.35);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(167, 139, 250, 0.25);
 }
 
 /* Exam Header */
@@ -223,19 +367,20 @@
     align-items: flex-start;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #ECF0F1;
+    border-bottom: 1.5px solid rgba(167, 139, 250, 0.15);
 }
 
 .exam-title h3 {
     margin: 0 0 0.5rem 0;
-    color: #2C3E50;
+    color: white;
     font-size: 1.5rem;
     font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .course-name {
     margin: 0;
-    color: #7F8C8D;
+    color: rgba(255, 255, 255, 0.85);
     font-size: 1rem;
     font-weight: 500;
 }
@@ -282,7 +427,7 @@
 
 .detail-label {
     font-size: 0.75rem;
-    color: #95A5A6;
+    color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
@@ -290,7 +435,7 @@
 
 .detail-value {
     font-size: 0.95rem;
-    color: #2C3E50;
+    color: white;
     font-weight: 600;
 }
 
@@ -304,18 +449,30 @@
 .btn-action {
     padding: 0.85rem 1.25rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 .btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .btn-action:active {
@@ -323,30 +480,30 @@
 }
 
 .btn-attendance {
-    background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
 }
 
 .btn-attendance:hover {
-    background: linear-gradient(135deg, #229954 0%, #1E8449 100%);
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 .btn-incident {
-    background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
 }
 
 .btn-incident:hover {
-    background: linear-gradient(135deg, #C0392B 0%, #A93226 100%);
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
 }
 
 .btn-reports {
-    background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
 }
 
 .btn-reports:hover {
-    background: linear-gradient(135deg, #2980B9 0%, #1F6391 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
 /* Mobile Responsiveness */
@@ -424,84 +581,202 @@
     }
 }
 
-.exam-actions {
+
+/* Toast Notification Styles */
+.toast-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 300px;
+    max-width: 500px;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(5, 150, 105, 0.9) 100%);
+    color: white;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.toast-error {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%);
+    color: white;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.toast-icon {
+    font-size: 24px;
+    font-weight: bold;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Add Student Button */
+.btn-add-student {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-student:hover {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+}
+
+/* Dashboard-specific overrides to prevent other pages' styles bleeding in */
+.dashboard-container .page-hero {
+    background: rgba(15, 30, 60, 0.6);
+    border: 1.5px solid rgba(167, 139, 250, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(167, 139, 250, 0.2);
+}
+
+.dashboard-container .hero-text h1 {
+    color: white;
+}
+
+.dashboard-container .hero-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.dashboard-container .stat-card {
+    background: rgba(30, 60, 114, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-container .stat-card:hover {
+    background: rgba(30, 60, 114, 0.5);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.dashboard-container .exams-section {
+    background: rgba(30, 60, 114, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-container .exam-card {
+    background: rgba(25, 50, 100, 0.45);
+    border: 1.5px solid rgba(167, 139, 250, 0.2);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(167, 139, 250, 0.15);
+}
+
+.dashboard-container .exam-card:hover {
+    background: rgba(25, 50, 100, 0.6);
+    border-color: rgba(167, 139, 250, 0.35);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 2px rgba(167, 139, 250, 0.25);
+}
+
+/* ==================== Sponsor Footer ==================== */
+.sponsor-footer {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2.5rem 1rem 1.5rem;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 1;
 }
 
-.btn-action {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-align: center;
+.sponsor-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.3), transparent);
 }
 
-.btn-attendance {
-    background-color: #28a745;
-    color: white;
+.sponsor-logo {
+    height: 32px;
+    width: auto;
+    opacity: 0.35;
+    filter: brightness(2) grayscale(0.3);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-attendance:hover {
-    background-color: #218838;
-    transform: scale(1.02);
+.sponsor-logo:hover {
+    opacity: 0.65;
+    filter: brightness(2.5) grayscale(0);
+    transform: scale(1.05);
 }
 
-.btn-incident {
-    background-color: #dc3545;
-    color: white;
+.sponsor-text {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
-.btn-incident:hover {
-    background-color: #c82333;
-    transform: scale(1.02);
+.sponsor-text .sponsor-heart {
+    color: rgba(167, 139, 250, 0.4);
+    font-style: normal;
+    animation: heartPulse 3s ease-in-out infinite;
 }
 
-.btn-reports {
-    background-color: #007bff;
-    color: white;
+@keyframes heartPulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.15); }
 }
 
-.btn-reports:hover {
-    background-color: #0056b3;
-    transform: scale(1.02);
+.sponsor-divider {
+    color: rgba(255, 255, 255, 0.15);
+    margin: 0 0.15rem;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 15px;
-    }
-
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .header-actions {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .btn-librarian,
-    .btn-logout {
-        width: 100%;
-    }
-
-    .exams-section {
-        padding: 20px;
-    }
-
-    .exams-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .exam-header h3 {
-        font-size: 18px;
-    }
+.sponsor-year {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.3px;
 }
+

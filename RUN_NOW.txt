@@ -1,0 +1,65 @@
+# 🚀 QUICK START - RUN THIS NOW!
+
+## Copy and Paste This Command
+
+```
+C:\Users\sstac\OneDrive\Desktop\exam-invigilator-app-repo\backend\build.bat
+```
+
+**That's all you need!**
+
+---
+
+## What Will Happen
+
+1. ✅ Downloads Maven (first time only)
+2. ✅ Compiles your Java code
+3. ✅ Builds the JAR file
+4. ✅ Starts the server
+5. ✅ Backend running on http://localhost:8080
+
+---
+
+## Then Visit
+
+```
+http://localhost:8080/api/exams
+```
+
+You'll see 1 active exam (BSC121) 🎉
+
+---
+
+## Login Credentials
+
+```
+Username: invigilator1
+Password: password123
+```
+
+---
+
+## That's It!
+
+Your backend is now running! 🚀
+
+Keep the command prompt window open.
+
+To stop: Press Ctrl+C
+
+---
+
+## 📚 Need More Info?
+
+Read: **START_HERE.md** (in root folder)
+
+---
+
+## ✅ Status
+
+**ALL FIXES APPLIED AND READY!**
+
+No more Java 25 compatibility issues.
+No more build failures.
+Just run build.bat and go! 🎉
+

@@ -1,0 +1,38 @@
+Compiled from "JwtParserBuilder.java"
+public interface io.jsonwebtoken.JwtParserBuilder extends io.jsonwebtoken.lang.Builder<io.jsonwebtoken.JwtParser> {
+  public abstract io.jsonwebtoken.JwtParserBuilder unsecured();
+  public abstract io.jsonwebtoken.JwtParserBuilder unsecuredDecompression();
+  public abstract io.jsonwebtoken.lang.NestedCollection<java.lang.String, io.jsonwebtoken.JwtParserBuilder> critical();
+  public abstract io.jsonwebtoken.JwtParserBuilder provider(java.security.Provider);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireId(java.lang.String);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireSubject(java.lang.String);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireAudience(java.lang.String);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireIssuer(java.lang.String);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireIssuedAt(java.util.Date);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireExpiration(java.util.Date);
+  public abstract io.jsonwebtoken.JwtParserBuilder requireNotBefore(java.util.Date);
+  public abstract io.jsonwebtoken.JwtParserBuilder require(java.lang.String, java.lang.Object);
+  public abstract io.jsonwebtoken.JwtParserBuilder setClock(io.jsonwebtoken.Clock);
+  public abstract io.jsonwebtoken.JwtParserBuilder clock(io.jsonwebtoken.Clock);
+  public abstract io.jsonwebtoken.JwtParserBuilder setAllowedClockSkewSeconds(long) throws java.lang.IllegalArgumentException;
+  public abstract io.jsonwebtoken.JwtParserBuilder clockSkewSeconds(long) throws java.lang.IllegalArgumentException;
+  public abstract io.jsonwebtoken.JwtParserBuilder setSigningKey(byte[]);
+  public abstract io.jsonwebtoken.JwtParserBuilder setSigningKey(java.lang.String);
+  public abstract io.jsonwebtoken.JwtParserBuilder setSigningKey(java.security.Key);
+  public abstract io.jsonwebtoken.JwtParserBuilder verifyWith(javax.crypto.SecretKey);
+  public abstract io.jsonwebtoken.JwtParserBuilder verifyWith(java.security.PublicKey);
+  public abstract io.jsonwebtoken.JwtParserBuilder decryptWith(javax.crypto.SecretKey);
+  public abstract io.jsonwebtoken.JwtParserBuilder decryptWith(java.security.PrivateKey);
+  public abstract io.jsonwebtoken.JwtParserBuilder keyLocator(io.jsonwebtoken.Locator<java.security.Key>);
+  public abstract io.jsonwebtoken.JwtParserBuilder setSigningKeyResolver(io.jsonwebtoken.SigningKeyResolver);
+  public abstract io.jsonwebtoken.lang.NestedCollection<io.jsonwebtoken.security.AeadAlgorithm, io.jsonwebtoken.JwtParserBuilder> enc();
+  public abstract io.jsonwebtoken.lang.NestedCollection<io.jsonwebtoken.security.KeyAlgorithm<?, ?>, io.jsonwebtoken.JwtParserBuilder> key();
+  public abstract io.jsonwebtoken.lang.NestedCollection<io.jsonwebtoken.security.SecureDigestAlgorithm<?, ?>, io.jsonwebtoken.JwtParserBuilder> sig();
+  public abstract io.jsonwebtoken.lang.NestedCollection<io.jsonwebtoken.io.CompressionAlgorithm, io.jsonwebtoken.JwtParserBuilder> zip();
+  public abstract io.jsonwebtoken.JwtParserBuilder setCompressionCodecResolver(io.jsonwebtoken.CompressionCodecResolver);
+  public abstract io.jsonwebtoken.JwtParserBuilder base64UrlDecodeWith(io.jsonwebtoken.io.Decoder<java.lang.CharSequence, byte[]>);
+  public abstract io.jsonwebtoken.JwtParserBuilder b64Url(io.jsonwebtoken.io.Decoder<java.io.InputStream, java.io.InputStream>);
+  public abstract io.jsonwebtoken.JwtParserBuilder deserializeJsonWith(io.jsonwebtoken.io.Deserializer<java.util.Map<java.lang.String, ?>>);
+  public abstract io.jsonwebtoken.JwtParserBuilder json(io.jsonwebtoken.io.Deserializer<java.util.Map<java.lang.String, ?>>);
+  public abstract io.jsonwebtoken.JwtParser build();
+}

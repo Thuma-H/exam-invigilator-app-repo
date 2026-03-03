@@ -161,58 +161,19 @@ public class DataInitializer implements CommandLineRunner {
         Student s7 = studentRepository.findByStudentId("BCS25165342").orElseThrow();
         Student s8 = studentRepository.findByStudentId("BCS25165343").orElseThrow();
 
-        // Exam 1: Software Engineering (today's date for easy testing)
+        // Single active exam: Software Engineering (today, starting NOW for easy testing)
         Exam exam1 = new Exam(
                 "BSC121",
                 "Software Engineering",
                 "Hall A",
                 LocalDate.now(), // Today
-                LocalTime.of(16, 50),
-                20, // 3 hours
+                LocalTime.now().minusMinutes(5), // Started 5 mins ago → ONGOING
+                180, // 3 hours
                 invigilator1
         );
-        exam1.setStudents(Arrays.asList(s1, s2, s3, s4, s5));
+        exam1.setStudents(Arrays.asList(s1, s2, s3, s4, s5, s6, s7, s8));
         examRepository.save(exam1);
 
-        // Exam 2: Database Systems (tomorrow)
-        Exam exam2 = new Exam(
-                "BSC122",
-                "Database Systems",
-                "Hall B",
-                LocalDate.now().plusDays(1),
-                LocalTime.of(14, 0),
-                120, // 2 hours
-                invigilator1
-        );
-        exam2.setStudents(Arrays.asList(s1, s3, s5, s6, s7));
-        examRepository.save(exam2);
-
-        // Exam 3: Data Structures (in 3 days)
-        Exam exam3 = new Exam(
-                "BSC123",
-                "Data Structures and Algorithms",
-                "Lab C",
-                LocalDate.now().plusDays(3),
-                LocalTime.of(10, 0),
-                150,
-                invigilator2
-        );
-        exam3.setStudents(Arrays.asList(s2, s4, s6, s8));
-        examRepository.save(exam3);
-
-        // Exam 4: Computer Networks (in 5 days)
-        Exam exam4 = new Exam(
-                "BSC124",
-                "Computer Networks",
-                "Hall A",
-                LocalDate.now().plusDays(5),
-                LocalTime.of(9, 0),
-                180,
-                invigilator1
-        );
-        exam4.setStudents(Arrays.asList(s1, s2, s3, s4, s5, s6, s7, s8));
-        examRepository.save(exam4);
-
-        System.out.println("✓ Created 4 exams with enrolled students");
+        System.out.println("✓ Created 1 active exam (Software Engineering) with 8 enrolled students");
     }
 }

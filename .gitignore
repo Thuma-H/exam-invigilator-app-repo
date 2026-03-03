@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ========================================
 # ENVIRONMENT & SECRETS
 # ========================================
@@ -70,3 +71,19 @@ logs/
 Thumbs.db
 .DS_Store
 
+=======
+# IntelliJ project files
+.idea/
+
+# Build outputs
+backend/target/
+frontend/build/
+
+# Node dependencies
+frontend/node_modules/
+
+# Logs and environment
+*.log
+.env
+/TEAM_WORKFLOW_GUIDE.md
+>>>>>>> Simon's-frontend

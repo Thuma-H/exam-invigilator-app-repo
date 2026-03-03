@@ -10,6 +10,7 @@ import com.examapp.repository.ExamRepository;
 import com.examapp.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -133,5 +134,27 @@ public class AttendanceService {
      */
     public List<Attendance> getAttendanceByInvigilator(String username) {
         return attendanceRepository.findByMarkedBy(username);
+    }
+
+    /**
+     * Undo (delete) attendance record for a student in an exam.
+     * @param examId - exam ID
+     * @param studentId - student ID
+     * @param reason - reason for undoing
+     * @param undoneBy - username of invigilator who is undoing
+     */
+    @Transactional
+    public void undoAttendance(Long examId, Long studentId, String reason, String undoneBy) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        if (!attendanceRepository.existsByExamAndStudent(exam, student)) {
+            throw new RuntimeException("No attendance record found to undo");
+        }
+
+        attendanceRepository.deleteByExamAndStudent(exam, student);
     }
 }

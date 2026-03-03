@@ -1,0 +1,425 @@
+/* StudentIDCard.css — Glass-themed Student ID Card (front + back) */
+
+/* ─── Modal Overlay ─── */
+.id-card-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: idcard-fadein 0.3s ease;
+}
+
+@keyframes idcard-fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ─── Modal Container ─── */
+.id-card-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-height: 95vh;
+    overflow-y: auto;
+}
+
+/* ─── Card Flip Container ─── */
+.id-card-flip-row {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* ─── Side Label ─── */
+.id-card-side-label {
+    text-align: center;
+    color: rgba(196, 181, 253, 0.7);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+/* ════════════════════════════════════════════════════
+   CARD FRONT
+   ════════════════════════════════════════════════════ */
+.id-card-front {
+    width: 380px;
+    height: 240px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 60, 114, 0.9) 50%, rgba(126, 87, 194, 0.8) 100%);
+    border: 1.5px solid rgba(167, 139, 250, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Glass sheen across top */
+.id-card-front::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ── University Header Strip ── */
+.id-card-header {
+    background: rgba(139, 92, 246, 0.35);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.id-card-uni-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.id-card-uni-sub {
+    font-size: 8px;
+    color: rgba(196, 181, 253, 0.8);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.id-card-header-logo {
+    height: 28px;
+    width: auto;
+    filter: brightness(2) drop-shadow(0 0 4px rgba(167, 139, 250, 0.4));
+    opacity: 0.85;
+}
+
+/* ── Card Body ── */
+.id-card-body {
+    display: flex;
+    padding: 12px 16px 10px;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+/* Photo placeholder */
+.id-card-photo {
+    width: 80px;
+    height: 95px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px dashed rgba(167, 139, 250, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.id-card-photo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: rgba(167, 139, 250, 0.4);
+}
+
+.id-card-photo-placeholder svg {
+    opacity: 0.5;
+}
+
+.id-card-photo-placeholder span {
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Student details */
+.id-card-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.id-card-student-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.id-card-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.id-card-field-label {
+    font-size: 8px;
+    color: rgba(196, 181, 253, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    min-width: 52px;
+}
+
+.id-card-field-value {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.id-card-field-value.mono {
+    font-family: 'Consolas', 'Courier New', monospace;
+    color: #c4b5fd;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ── QR Code — bottom left corner ── */
+.id-card-qr {
+    position: absolute;
+    bottom: 10px;
+    left: 14px;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 6px;
+    padding: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.id-card-qr img {
+    width: 58px;
+    height: 58px;
+    display: block;
+    border-radius: 3px;
+}
+
+/* ── Watermark swirl on front ── */
+.id-card-front-watermark {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    width: 120px;
+    height: 120px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ════════════════════════════════════════════════════
+   CARD BACK
+   ════════════════════════════════════════════════════ */
+.id-card-back {
+    width: 380px;
+    height: 240px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 60, 114, 0.85) 60%, rgba(126, 87, 194, 0.75) 100%);
+    border: 1.5px solid rgba(167, 139, 250, 0.25);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.06);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Large transparent watermark */
+.id-card-back-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    height: 180px;
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Back content */
+.id-card-back-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.id-card-back-logo {
+    height: 36px;
+    width: auto;
+    filter: brightness(1.8) drop-shadow(0 0 8px rgba(167, 139, 250, 0.3));
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+.id-card-back-uni {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.id-card-back-tagline {
+    font-size: 9px;
+    color: rgba(196, 181, 253, 0.6);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.id-card-back-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.4), transparent);
+    margin: 2px 0;
+}
+
+.id-card-back-info {
+    font-size: 8px;
+    color: rgba(203, 213, 225, 0.5);
+    line-height: 1.6;
+    text-align: center;
+    max-width: 280px;
+}
+
+.id-card-back-year {
+    font-size: 8px;
+    color: rgba(167, 139, 250, 0.4);
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* Glass sheen on back */
+.id-card-back::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ════════════════════════════════════════════════════
+   ACTION BUTTONS
+   ════════════════════════════════════════════════════ */
+.id-card-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.id-card-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.id-card-btn-download {
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    color: white;
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.id-card-btn-download:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+.id-card-btn-download:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.id-card-btn-close {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+}
+
+.id-card-btn-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 860px) {
+    .id-card-flip-row {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 420px) {
+    .id-card-front,
+    .id-card-back {
+        width: 340px;
+        height: 215px;
+    }
+
+    .id-card-photo {
+        width: 65px;
+        height: 80px;
+    }
+
+    .id-card-student-name {
+        font-size: 13px;
+    }
+}
+

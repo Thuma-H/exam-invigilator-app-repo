@@ -10,6 +10,7 @@ import com.examapp.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -158,5 +159,16 @@ public class IncidentService {
 
         incident.setEvidenceFile(filePath);
         return incidentRepository.save(incident);
+    }
+
+    /**
+     * Clear all incidents for an exam
+     * @param examId - exam ID
+     */
+    @Transactional
+    public void clearAllForExam(Long examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new RuntimeException("Exam not found"));
+        incidentRepository.deleteByExam(exam);
     }
 }

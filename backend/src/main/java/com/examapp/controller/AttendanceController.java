@@ -122,6 +122,40 @@ public class AttendanceController {
     }
 
     /**
+     * Undo attendance (delete the attendance record)
+     * DELETE /api/attendance/undo
+     * Header: Authorization: Bearer <token>
+     * Body: {"examId": 1, "studentId": 3, "reason": "Scanner misread"}
+     */
+    @DeleteMapping("/undo")
+    public ResponseEntity<?> undoAttendance(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestBody java.util.Map<String, Object> request) {
+        try {
+            String username = extractUsername(authHeader);
+            Long examId = Long.valueOf(request.get("examId").toString());
+            Long studentId = Long.valueOf(request.get("studentId").toString());
+            String reason = request.get("reason") != null ? request.get("reason").toString() : "No reason provided";
+
+            attendanceService.undoAttendance(examId, studentId, reason, username);
+
+            return ResponseEntity.ok(java.util.Map.of(
+                "message", "Attendance undone successfully",
+                "examId", examId,
+                "studentId", studentId,
+                "reason", reason,
+                "undoneBy", username
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error undoing attendance: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    /**
      * Helper method to extract username from JWT token
      */
     private String extractUsername(String authHeader) {

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * IncidentController - REST API endpoints for incident reporting.
@@ -153,6 +154,25 @@ public class IncidentController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Error fetching incidents: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Clear all incidents for a specific exam (requires auth)
+     * DELETE /api/incidents/exam/1/clear
+     * Header: Authorization: Bearer <token>
+     */
+    @DeleteMapping("/exam/{examId}/clear")
+    public ResponseEntity<?> clearAllIncidents(
+            @PathVariable Long examId,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            extractUsername(authHeader); // verify token is valid
+            incidentService.clearAllForExam(examId);
+            return ResponseEntity.ok(Map.of("message", "All reports cleared successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Failed to clear incidents: " + e.getMessage()));
         }
     }
 

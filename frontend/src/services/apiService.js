@@ -9,10 +9,33 @@ const getAuthHeaders = () => {
     return headers;
 };
 
+// Auto-clear bad auth and redirect to login
+function handleAuthError(errorText) {
+    const isAuthError = errorText && (
+        errorText.includes('JWT') ||
+        errorText.includes('token') ||
+        errorText.includes('Unauthorized') ||
+        errorText.includes('Access Denied')
+    );
+    if (isAuthError) {
+        console.warn('Auth error detected — clearing session and redirecting to login');
+        sessionStorage.clear();
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
+        window.location.href = '/login';
+    }
+}
+
 // Helper to parse JSON responses and return { data }
 async function handleJsonResponse(response) {
     if (!response.ok) {
         const text = await response.text().catch(() => null);
+        // If it's a 401/403 or JWT error, auto-logout
+        if (response.status === 401 || response.status === 403) {
+            handleAuthError(text || 'Unauthorized');
+        }
+        if (text) handleAuthError(text);
         throw new Error(text || response.statusText || 'Request failed');
     }
     const json = await response.json().catch(() => null);
@@ -42,9 +65,10 @@ const apiService = {
     },
 
     logout: async () => {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
+        sessionStorage.clear();
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
         localStorage.removeItem('username');
         return { data: 'Logged out' };
     },
@@ -55,6 +79,10 @@ const apiService = {
         const response = await fetch(`${API_BASE_URL}/exams`, { headers: getAuthHeaders() });
         if (!response.ok) {
             const text = await response.text().catch(() => null);
+            if (response.status === 401 || response.status === 403) {
+                handleAuthError(text || 'Unauthorized');
+            }
+            if (text) handleAuthError(text);
             throw new Error(text || response.statusText || 'Request failed');
         }
         const json = await response.json().catch(() => []);
@@ -138,6 +166,74 @@ const apiService = {
         // Return raw blob (frontend code expects a Blob)
         return handleBlobResponse(response);
     },
+
+    // ==================== ADD/DELETE STUDENT TO/FROM EXAM ====================
+
+    addStudentToExam: async (studentData) => {
+        // First, create or verify the student exists
+        const response = await fetch(`${API_BASE_URL}/students`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                studentId: studentData.studentId,
+                fullName: studentData.fullName,
+                program: studentData.program,
+                email: studentData.email
+            }),
+        });
+
+        if (!response.ok) {
+            const text = await response.text().catch(() => null);
+            throw new Error(text || 'Failed to create student');
+        }
+
+        const student = await response.json();
+
+        // Now add the student to the exam
+        const addToExamResponse = await fetch(`${API_BASE_URL}/exams/${studentData.examId}/students/${student.id}`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+
+        return handleJsonResponse(addToExamResponse);
+    },
+
+    removeStudentFromExam: async (examId, studentId) => {
+        const response = await fetch(`${API_BASE_URL}/exams/${examId}/students/${studentId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        return handleJsonResponse(response);
+    },
+
+    // ==================== UNDO ATTENDANCE (requires re-auth) ====================
+
+    undoAttendance: async (examId, studentId, reason, username, password) => {
+        // Re-authenticate first
+        const authResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+
+        if (!authResponse.ok) {
+            throw new Error('Authentication failed. Incorrect credentials.');
+        }
+
+        // Use the fresh token from re-auth for the delete call
+        const authData = await authResponse.json();
+        const freshToken = authData.token;
+
+        const response = await fetch(`${API_BASE_URL}/attendance/undo`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${freshToken}`,
+            },
+            body: JSON.stringify({ examId, studentId, reason }),
+        });
+        return handleJsonResponse(response);
+    },
 };
 
 export default apiService;
@@ -150,12 +246,14 @@ export const getExamById = (examId) => apiService.getExamById(examId);
 export const getStudentsForExam = (examId) => apiService.getStudentsForExam(examId);
 // alias: components expect getIncidentsForExam but this file originally named it getExamIncidents
 export const getIncidentsForExam = (examId) => apiService.getExamIncidents(examId);
-export const reportIncident = (incidentData) => apiService.reportIncident(incidentData);
+export const reportIncident = (examId, studentId, category, severity, description) =>
+    apiService.reportIncident({ examId, studentId, category, severity, description });
 
 // Attendance-related named exports
 export const getAttendanceForExam = (examId) => apiService.getAttendanceForExam(examId);
-// Mark attendance helper: accept parameters (examId, studentId, status, method) and forward as object
-export const markAttendance = (examId, studentId, status, method = 'MANUAL') => apiService.markAttendance({ examId, studentId, status, method });
+// Mark attendance helper: accept parameters (examId, studentId, status, method, reason) and forward as object
+export const markAttendance = (examId, studentId, status, method = 'MANUAL', reason = '') =>
+    apiService.markAttendance({ examId, studentId, status, method, reason });
 export const getAttendanceSummary = (examId) => apiService.getAttendanceSummary(examId);
 export const getIncidentCount = (examId) => apiService.getIncidentCount(examId);
 
@@ -163,4 +261,38 @@ export const getIncidentCount = (examId) => apiService.getIncidentCount(examId);
 export const getAllStudents = () => apiService.getAllStudents();
 export const searchStudent = (studentId) => apiService.searchStudent(studentId);
 export const downloadBarcode = (studentId) => apiService.downloadBarcode(studentId);
+
+// Add/Remove student from exam
+export const addStudentToExam = (studentData) => apiService.addStudentToExam(studentData);
+export const removeStudentFromExam = (examId, studentId) => apiService.removeStudentFromExam(examId, studentId);
+
+// Undo attendance (re-auth required)
+export const undoAttendance = (examId, studentId, reason, username, password) =>
+    apiService.undoAttendance(examId, studentId, reason, username, password);
+
+// Clear all incidents for an exam (re-auth required)
+export const clearAllIncidents = async (examId, username, password) => {
+    // Re-authenticate to verify identity
+    const authResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+    });
+
+    if (!authResponse.ok) {
+        throw new Error('Authentication failed. Incorrect credentials.');
+    }
+
+    const authData = await authResponse.json();
+    const freshToken = authData.token;
+
+    const response = await fetch(`${API_BASE_URL}/incidents/exam/${examId}/clear`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${freshToken}`,
+        },
+    });
+    return handleJsonResponse(response);
+};
 

@@ -53,4 +53,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
      * @return List of attendance records
      */
     List<Attendance> findByMarkedBy(String markedBy);
+
+    /**
+     * Delete attendance record for a specific student in a specific exam
+     * @param exam - the exam
+     * @param student - the student
+     */
+    void deleteByExamAndStudent(Exam exam, Student student);
 }

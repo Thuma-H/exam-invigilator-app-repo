@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@ericblade/quagga2": "^1.12.1",
     "@react-buddy/ide-toolbox": "^2.4.0",
     "axios": "^1.5.1",
+    "html2canvas": "^1.4.1",
+    "html5-qrcode": "^2.3.8",
     "react": "^18.2.0",
     "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",

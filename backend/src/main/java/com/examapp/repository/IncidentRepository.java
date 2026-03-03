@@ -63,4 +63,10 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
      * @return List of matching incidents
      */
     List<Incident> findByExamAndSeverity(Exam exam, String severity);
+
+    /**
+     * Delete all incidents for a specific exam
+     * @param exam - the exam to clear incidents for
+     */
+    void deleteByExam(Exam exam);
 }

@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function ExamTimer({ exam }) {
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [examStatus, setExamStatus] = useState('NOT_STARTED'); // NOT_STARTED, IN_PROGRESS, ENDED
+    const [examStatus, setExamStatus] = useState('NOT_STARTED');
     const [timeDisplay, setTimeDisplay] = useState('');
+    const [isMinimized, setIsMinimized] = useState(false);
+    const [position, setPosition] = useState({ x: 0, y: 80 });
+    const dragDataRef = useRef({ dragging: false, offsetX: 0, offsetY: 0 });
+
+    // Initialize default position anchored to top-right
+    useEffect(() => {
+        const widgetWidth = 220;
+        const safeMargin = 20;
+        setPosition({ x: Math.max(safeMargin, window.innerWidth - widgetWidth - safeMargin), y: 80 });
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -16,6 +26,40 @@ function ExamTimer({ exam }) {
     useEffect(() => {
         calculateExamStatus();
     }, [currentTime]);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!dragDataRef.current.dragging) return;
+            const newX = Math.min(
+                Math.max(10, e.clientX - dragDataRef.current.offsetX),
+                window.innerWidth - 200
+            );
+            const newY = Math.min(
+                Math.max(10, e.clientY - dragDataRef.current.offsetY),
+                window.innerHeight - 120
+            );
+            setPosition({ x: newX, y: newY });
+        };
+        const handleMouseUp = () => {
+            dragDataRef.current.dragging = false;
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, []);
+
+    const startDrag = (e) => {
+        dragDataRef.current = {
+            dragging: true,
+            offsetX: e.clientX - position.x,
+            offsetY: e.clientY - position.y,
+        };
+    };
+
+    const toggleMinimize = () => setIsMinimized((prev) => !prev);
 
     const calculateExamStatus = () => {
         const now = new Date();
@@ -62,28 +106,43 @@ function ExamTimer({ exam }) {
                 return {
                     icon: '🕐',
                     label: 'Starts In',
-                    color: '#2196F3', // Blue
+                    bg: 'rgba(33, 150, 243, 0.2)',
+                    border: 'rgba(33, 150, 243, 0.35)',
+                    glow: '0 0 25px rgba(33, 150, 243, 0.25), 0 8px 32px rgba(0,0,0,0.3)',
+                    accent: '#60a5fa',
                     message: 'Exam Not Started'
                 };
             case 'IN_PROGRESS':
+                const isLow = timeDisplay < '00:10:00';
                 return {
                     icon: '⏱️',
                     label: 'Time Left',
-                    color: timeDisplay < '00:10:00' ? '#ff6b6b' : '#4CAF50', // Red if <10min, else green
+                    bg: isLow ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)',
+                    border: isLow ? 'rgba(239, 68, 68, 0.35)' : 'rgba(34, 197, 94, 0.35)',
+                    glow: isLow
+                        ? '0 0 25px rgba(239, 68, 68, 0.3), 0 8px 32px rgba(0,0,0,0.3)'
+                        : '0 0 25px rgba(34, 197, 94, 0.25), 0 8px 32px rgba(0,0,0,0.3)',
+                    accent: isLow ? '#fca5a5' : '#86efac',
                     message: 'Exam In Progress'
                 };
             case 'ENDED':
                 return {
                     icon: '✅',
                     label: 'Exam Ended',
-                    color: '#9e9e9e', // Gray
+                    bg: 'rgba(148, 163, 184, 0.12)',
+                    border: 'rgba(148, 163, 184, 0.2)',
+                    glow: '0 0 20px rgba(148, 163, 184, 0.15), 0 8px 32px rgba(0,0,0,0.3)',
+                    accent: '#94a3b8',
                     message: 'Time Expired'
                 };
             default:
                 return {
                     icon: '⏱️',
                     label: 'Timer',
-                    color: '#4CAF50',
+                    bg: 'rgba(34, 197, 94, 0.2)',
+                    border: 'rgba(34, 197, 94, 0.35)',
+                    glow: '0 0 25px rgba(34, 197, 94, 0.25), 0 8px 32px rgba(0,0,0,0.3)',
+                    accent: '#86efac',
                     message: ''
                 };
         }
@@ -96,36 +155,74 @@ function ExamTimer({ exam }) {
             className="exam-timer"
             style={{
                 position: 'fixed',
-                top: '80px',
-                right: '20px',
-                background: config.color,
+                left: `${position.x}px`,
+                top: `${position.y}px`,
+                background: config.bg,
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: `1px solid ${config.border}`,
                 color: 'white',
-                padding: '20px',
-                borderRadius: '10px',
+                padding: isMinimized ? '10px 14px' : '20px',
+                borderRadius: '16px',
                 fontSize: '18px',
                 fontWeight: 'bold',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-                zIndex: 1000,
-                minWidth: '180px',
+                boxShadow: config.glow,
+                zIndex: 99999,
+                minWidth: isMinimized ? '160px' : '200px',
                 textAlign: 'center',
-                transition: 'background 0.3s ease'
+                transition: 'all 0.4s ease',
+                cursor: 'grab',
+                userSelect: 'none',
             }}
+            onMouseDown={startDrag}
         >
-            <div style={{ fontSize: '24px', marginBottom: '5px' }}>
-                {config.icon}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isMinimized ? 0 : 8 }}>
+                <span style={{ fontSize: '20px', lineHeight: 1 }}>{config.icon}</span>
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleMinimize();
+                    }}
+                    style={{
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        color: 'rgba(255,255,255,0.7)',
+                        borderRadius: '8px',
+                        padding: '4px 10px',
+                        cursor: 'pointer',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        letterSpacing: '0.3px',
+                        transition: 'all 0.2s ease',
+                    }}
+                >
+                    {isMinimized ? 'Expand' : 'Minimize'}
+                </button>
             </div>
-            <div style={{ fontSize: '14px', marginBottom: '10px', opacity: 0.9 }}>
-                {config.label}
-            </div>
-            <div style={{ fontSize: '32px', fontFamily: 'monospace', marginBottom: '10px' }}>
-                {timeDisplay}
-            </div>
-            <div style={{ fontSize: '12px', opacity: 0.8, textTransform: 'uppercase' }}>
-                {config.message}
-            </div>
-            <div style={{ fontSize: '11px', marginTop: '10px', opacity: 0.7 }}>
-                {exam.courseCode}
-            </div>
+
+            {!isMinimized && (
+                <>
+                    <div style={{ fontSize: '13px', marginBottom: '10px', color: config.accent, fontWeight: 600, letterSpacing: '0.3px' }}>
+                        {config.label}
+                    </div>
+                    <div style={{ fontSize: '32px', fontFamily: 'monospace', marginBottom: '10px', color: '#ffffff', textShadow: `0 0 20px ${config.border}` }}>
+                        {timeDisplay}
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'rgba(203, 213, 225, 0.7)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+                        {config.message}
+                    </div>
+                    <div style={{ fontSize: '11px', marginTop: '10px', color: 'rgba(148, 163, 184, 0.5)', fontWeight: 500 }}>
+                        {exam.courseCode}
+                    </div>
+                </>
+            )}
+
+            {isMinimized && (
+                <div style={{ fontSize: '14px', display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
+                    <span style={{ opacity: 0.7, fontSize: '12px' }}>{config.label}</span>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 700, color: config.accent }}>{timeDisplay}</span>
+                </div>
+            )}
         </div>
     );
 }
