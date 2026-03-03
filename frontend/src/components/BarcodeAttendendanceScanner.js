@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Quagga from '@ericblade/quagga2';
+import { Html5Qrcode } from 'html5-qrcode';
 
 function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
     const [scanning, setScanning] = useState(false);
     const [lastScanned, setLastScanned] = useState(null);
     const [scannedStudents, setScannedStudents] = useState([]);
     const [message, setMessage] = useState('');
-    const scannerRef = useRef(null);
+    const html5QrCodeRef = useRef(null);
     const cooldownRef = useRef(null);
 
     useEffect(() => {
@@ -21,55 +21,52 @@ function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
         };
     }, [scanning]);
 
-    const startScanner = () => {
-        if (!scannerRef.current) return;
+    const startScanner = async () => {
+        try {
+            const html5QrCode = new Html5Qrcode('qr-attendance-scanner');
+            html5QrCodeRef.current = html5QrCode;
 
-        Quagga.init({
-            inputStream: {
-                type: 'LiveStream',
-                target: scannerRef.current,
-                constraints: {
-                    width: 640,
-                    height: 480,
-                    facingMode: 'environment'
+            await html5QrCode.start(
+                { facingMode: 'environment' },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText) => {
+                    handleBarcodeScan(decodedText);
+                },
+                (errorMessage) => {
+                    // Ignore scan misses
                 }
-            },
-            locator: {
-                patchSize: 'medium',
-                halfSample: true
-            },
-            decoder: {
-                readers: ['code_128_reader']
-            },
-            locate: true
-        }, (err) => {
-            if (err) {
-                console.error('Scanner initialization error:', err);
-                setMessage('❌ Camera access denied or not available');
-                setScanning(false);
-                return;
+            );
+            console.log('✅ QR Scanner initialized');
+        } catch (err) {
+            console.error('Scanner initialization error:', err);
+            setMessage('❌ Camera access denied or not available');
+            setScanning(false);
+        }
+    };
+
+    const stopScanner = async () => {
+        if (html5QrCodeRef.current) {
+            try {
+                await html5QrCodeRef.current.stop();
+            } catch (err) {
+                console.log('Scanner stop:', err);
             }
-            console.log('✅ Scanner initialized');
-            Quagga.start();
-        });
-
-        Quagga.onDetected(handleBarcodeScan);
+            html5QrCodeRef.current = null;
+        }
     };
 
-    const stopScanner = () => {
-        Quagga.offDetected(handleBarcodeScan);
-        Quagga.stop();
-    };
+    const handleBarcodeScan = async (decodedText) => {
+        if (!decodedText) return;
 
-    const handleBarcodeScan = async (result) => {
-        if (!result || !result.codeResult) return;
-
-        const code = result.codeResult.code;
+        const code = decodedText;
 
         // Prevent duplicate scans within 2 seconds
         if (cooldownRef.current) return;
 
-        console.log('📷 Barcode detected:', code);
+        console.log('📷 QR Code detected:', code);
 
         // Find student
         const student = students.find(s => s.studentId === code);
@@ -94,7 +91,7 @@ function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
             await onAttendanceMarked(student.id, 'PRESENT');
 
             setLastScanned(student);
-            setScannedStudents([...scannedStudents, student]);
+            setScannedStudents(prev => [...prev, student]);
             setMessage(`✅ ${student.fullName} - PRESENT`);
             playBeep(800, 100);
 
@@ -142,7 +139,7 @@ function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
                 alignItems: 'center',
                 marginBottom: '1rem'
             }}>
-                <h3 style={{ margin: 0 }}>📷 Barcode Scanner</h3>
+                <h3 style={{ margin: 0 }}>📷 QR Code Scanner</h3>
                 <button
                     onClick={() => setScanning(!scanning)}
                     className={`btn ${scanning ? 'btn-danger' : 'btn-success'}`}
@@ -181,45 +178,7 @@ function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
                     overflow: 'hidden',
                     marginBottom: '1rem'
                 }}>
-                    <div ref={scannerRef} style={{ width: '100%', minHeight: '400px' }} />
-
-                    <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '80%',
-                        height: '200px',
-                        border: '3px solid #27ae60',
-                        borderRadius: '8px',
-                        pointerEvents: 'none',
-                        boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)'
-                    }}>
-                        <div style={{
-                            position: 'absolute',
-                            top: '-30px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            backgroundColor: '#27ae60',
-                            color: 'white',
-                            padding: '0.5rem 1rem',
-                            borderRadius: '4px',
-                            fontSize: '0.9rem',
-                            fontWeight: 'bold'
-                        }}>
-                            Position barcode in this area
-                        </div>
-                    </div>
-
-                    <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '10%',
-                        right: '10%',
-                        height: '2px',
-                        backgroundColor: '#27ae60',
-                        animation: 'scan 2s ease-in-out infinite'
-                    }} />
+                    <div id="qr-attendance-scanner" style={{ width: '100%' }} />
                 </div>
             ) : (
                 <div style={{
@@ -231,7 +190,7 @@ function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
                 }}>
                     <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📷</div>
                     <p style={{ color: '#666', fontSize: '1.1rem' }}>
-                        Click "Start Scanner" to begin scanning student ID cards
+                        Click "Start Scanner" to begin scanning student QR codes
                     </p>
                 </div>
             )}
@@ -317,13 +276,6 @@ function BarcodeAttendanceScanner({ examId, students, onAttendanceMarked }) {
                     </div>
                 </div>
             )}
-
-            <style>{`
-        @keyframes scan {
-          0%, 100% { transform: translateY(-100px); opacity: 0; }
-          50% { transform: translateY(100px); opacity: 1; }
-        }
-      `}</style>
         </div>
     );
 }

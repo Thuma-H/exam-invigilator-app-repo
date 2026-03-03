@@ -5,7 +5,8 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.oned.Code128Writer;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -19,15 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * BarcodeService - Generates and manages barcodes for student IDs
- * Uses Code128 format for alphanumeric student numbers like BCS25165336
+ * BarcodeService - Generates and manages QR codes for student IDs
+ * Uses QR Code format for alphanumeric student numbers like BCS25165336
  */
 @Service
 public class BarcodeService {
 
     private static final String BARCODE_DIR = "barcodes/";
     private static final int BARCODE_WIDTH = 300;
-    private static final int BARCODE_HEIGHT = 100;
+    private static final int BARCODE_HEIGHT = 300;
 
     public BarcodeService() {
         // Create barcodes directory if it doesn't exist
@@ -43,20 +44,22 @@ public class BarcodeService {
     }
 
     /**
-     * Generate a barcode for a student ID and save it to disk
+     * Generate a QR code for a student ID and save it to disk
      * @param studentId The student ID (e.g., BCS25165336)
-     * @return Path to the saved barcode image
+     * @return Path to the saved QR code image
      */
     public String generateBarcode(String studentId) throws WriterException, IOException {
-        // Configure barcode encoding
+        // Configure QR code encoding
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.MARGIN, 1); // Minimal white border
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 
-        // Generate barcode matrix
-        Code128Writer writer = new Code128Writer();
+        // Generate QR code matrix
+        QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix = writer.encode(
                 studentId,
-                BarcodeFormat.CODE_128,
+                BarcodeFormat.QR_CODE,
                 BARCODE_WIDTH,
                 BARCODE_HEIGHT,
                 hints
@@ -70,23 +73,25 @@ public class BarcodeService {
         Path filePath = Paths.get(BARCODE_DIR + filename);
         ImageIO.write(barcodeImage, "PNG", filePath.toFile());
 
-        System.out.println("✅ Barcode generated: " + filePath);
+        System.out.println("✅ QR code generated: " + filePath);
         return filePath.toString();
     }
 
     /**
-     * Generate barcode as byte array (for API responses)
+     * Generate QR code as byte array (for API responses)
      * @param studentId The student ID
      * @return PNG image as byte array
      */
     public byte[] generateBarcodeBytes(String studentId) throws WriterException, IOException {
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.MARGIN, 1);
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 
-        Code128Writer writer = new Code128Writer();
+        QRCodeWriter writer = new QRCodeWriter();
         BitMatrix bitMatrix = writer.encode(
                 studentId,
-                BarcodeFormat.CODE_128,
+                BarcodeFormat.QR_CODE,
                 BARCODE_WIDTH,
                 BARCODE_HEIGHT,
                 hints

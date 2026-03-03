@@ -5,6 +5,7 @@ import axios from 'axios';
 import { API_CONFIG } from '../config/environment';
 import './LibrarianDashboard.css';
 import SpinningCrescents from '../components/SpinningCrescents';
+import StudentIDCard from '../components/StudentIDCard';
 
 function LibrarianDashboard() {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ function LibrarianDashboard() {
 
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [idCardStudent, setIdCardStudent] = useState(null);
 
     useEffect(() => {
         fetchStudents();
@@ -264,13 +266,13 @@ function LibrarianDashboard() {
                                             <td>
                                                 <button
                                                     className="lib-download-btn"
-                                                    onClick={() => downloadBarcode(student.studentId)}
-                                                    title="Download Barcode"
+                                                    onClick={() => setIdCardStudent(student)}
+                                                    title="Download Student ID Card"
                                                 >
                                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                                     </svg>
-                                                    Download
+                                                    ID Card
                                                 </button>
                                             </td>
                                         </tr>
@@ -295,6 +297,14 @@ function LibrarianDashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Student ID Card Modal */}
+            {idCardStudent && (
+                <StudentIDCard
+                    student={idCardStudent}
+                    onClose={() => setIdCardStudent(null)}
+                />
+            )}
         </>
     );
 }

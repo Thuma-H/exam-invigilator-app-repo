@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Quagga from '@ericblade/quagga2';
+import { Html5Qrcode } from 'html5-qrcode';
 
 function BarcodeScanner({ onScan, onError }) {
-    const scannerRef = useRef(null);
+    const html5QrCodeRef = useRef(null);
     const [isScanning, setIsScanning] = useState(false);
 
     useEffect(() => {
@@ -17,39 +17,43 @@ function BarcodeScanner({ onScan, onError }) {
         };
     }, [isScanning]);
 
-    const startScanner = () => {
-        Quagga.init({
-            inputStream: {
-                type: 'LiveStream',
-                target: scannerRef.current,
-                constraints: {
-                    width: 640,
-                    height: 480,
-                    facingMode: 'environment' // Use back camera
-                }
-            },
-            decoder: {
-                readers: ['code_128_reader'] // Match your backend barcode format
-            }
-        }, (err) => {
-            if (err) {
-                console.error('Scanner initialization error:', err);
-                if (onError) onError(err);
-                return;
-            }
-            Quagga.start();
-        });
+    const startScanner = async () => {
+        try {
+            const html5QrCode = new Html5Qrcode('qr-scanner-region');
+            html5QrCodeRef.current = html5QrCode;
 
-        Quagga.onDetected((result) => {
-            const code = result.codeResult.code;
-            console.log('✅ Barcode detected:', code);
-            if (onScan) onScan(code);
-            stopScanner();
-        });
+            await html5QrCode.start(
+                { facingMode: 'environment' },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText) => {
+                    console.log('✅ QR Code detected:', decodedText);
+                    if (onScan) onScan(decodedText);
+                    // Stop after successful scan
+                    setIsScanning(false);
+                },
+                (errorMessage) => {
+                    // Ignore scan misses — these fire constantly until a code is found
+                }
+            );
+        } catch (err) {
+            console.error('Scanner initialization error:', err);
+            if (onError) onError(err);
+            setIsScanning(false);
+        }
     };
 
-    const stopScanner = () => {
-        Quagga.stop();
+    const stopScanner = async () => {
+        if (html5QrCodeRef.current) {
+            try {
+                await html5QrCodeRef.current.stop();
+            } catch (err) {
+                console.log('Scanner stop:', err);
+            }
+            html5QrCodeRef.current = null;
+        }
     };
 
     return (
@@ -67,11 +71,11 @@ function BarcodeScanner({ onScan, onError }) {
                         cursor: 'pointer'
                     }}
                 >
-                    📷 Start Scanning
+                    📷 Start QR Scanning
                 </button>
             ) : (
                 <>
-                    <div ref={scannerRef} style={{ width: '100%', maxWidth: '640px' }} />
+                    <div id="qr-scanner-region" style={{ width: '100%', maxWidth: '640px' }} />
                     <button
                         onClick={() => setIsScanning(false)}
                         style={{
