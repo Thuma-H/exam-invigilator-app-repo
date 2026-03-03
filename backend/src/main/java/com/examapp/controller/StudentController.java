@@ -2,37 +2,45 @@ package com.examapp.controller;
 
 import com.examapp.model.Student;
 import com.examapp.repository.StudentRepository;
+import com.examapp.service.BarcodeService;
+import com.examapp.service.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
+ * StudentController - Endpoints for student data
  *
- * This app only READS student data for attendance tracking.
-/**
- * StudentController - READ-ONLY endpoints for student data
- *
- * ⚠️ IMPORTANT: Students are managed by the university system.
- * This app only READS student data for attendance tracking.
- *
- * CREATE/UPDATE/DELETE operations have been removed.
- * Students must be added to the database via DataInitializer or direct DB import.
- */
- *
- * CREATE/UPDATE/DELETE operations have been removed.
- * Students must be added to the database via DataInitializer or direct DB import.
+ * Students are managed by the university system.
+ * This app READS student data for attendance tracking
+ * and supports registering new students via POST.
  */
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = "*")
 public class StudentController {
-     * Get all students (READ-ONLY)
-=======
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private BarcodeService barcodeService;
+
+    @Autowired
+    private EmailService emailService;
+
+    /**
      * Register a new student or return existing
      * POST /api/students
      * Body: {"studentId": "BCS25165344", "fullName": "John Doe", "program": "Computer Science", "email": "john@example.com"}
      */
     @PostMapping
-    public ResponseEntity registerStudent(@RequestBody Student student) {
+    public ResponseEntity<?> registerStudent(@RequestBody Student student) {
         try {
             // Check if student ID already exists - return existing student
             java.util.Optional<Student> existingStudent = studentRepository.findByStudentId(student.getStudentId());
@@ -59,13 +67,11 @@ public class StudentController {
                 System.err.println("Warning: Could not generate barcode: " + e.getMessage());
             }
 
-            // Send email to librarian (non-blocking)
+            // Send email notification (non-blocking)
             try {
-                emailService.notifyNewStudent(
-                        student.getStudentId(),
-                        student.getFullName(),
-                        student.getProgram()
-                );
+                if (student.getEmail() != null && !student.getEmail().isEmpty()) {
+                    emailService.notifyIdCardReady(student.getEmail());
+                }
             } catch (Exception e) {
                 System.err.println("Warning: Could not send email: " + e.getMessage());
             }
@@ -82,27 +88,28 @@ public class StudentController {
 
     /**
      * Get all students
->>>>>>> Simon's-frontend
      * GET /api/students
-    public ResponseEntity<List<Student>> getAllStudents() {
+     */
     @GetMapping
     public ResponseEntity<List<Student>> getAllStudents() {
         return ResponseEntity.ok(studentRepository.findAll());
     }
-     * Search student by ID (READ-ONLY)
+
     /**
-     * Search student by ID (READ-ONLY)
+     * Search student by ID
      * GET /api/students/search?studentId=BCS25165336
-    public ResponseEntity<?> searchStudent(@RequestParam String studentId) {
+     */
     @GetMapping("/search")
     public ResponseEntity<?> searchStudent(@RequestParam String studentId) {
         return studentRepository.findByStudentId(studentId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-     * Get student by database ID (READ-ONLY)
-     * GET /api/students/{id}
 
+    /**
+     * Get student by database ID
+     * GET /api/students/{id}
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable Long id) {
         return studentRepository.findById(id)
@@ -111,17 +118,17 @@ public class StudentController {
     }
 
     /**
-     * Search students by name (READ-ONLY)
+     * Search students by name
      * GET /api/students/search-by-name?name=Alice
      */
     @GetMapping("/search-by-name")
     public ResponseEntity<List<Student>> searchByName(@RequestParam String name) {
         List<Student> students = studentRepository.findByFullNameContainingIgnoreCase(name);
         return ResponseEntity.ok(students);
-
+    }
 
     /**
-     * Get students by program (READ-ONLY)
+     * Get students by program
      * GET /api/students/program?program=Computer Science
      */
     @GetMapping("/program")
@@ -129,3 +136,4 @@ public class StudentController {
         List<Student> students = studentRepository.findByProgram(program);
         return ResponseEntity.ok(students);
     }
+}
