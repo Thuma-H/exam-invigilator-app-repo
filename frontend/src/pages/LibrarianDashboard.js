@@ -120,13 +120,8 @@ function LibrarianDashboard() {
     return (
         <>
             <Navbar />
-            <div className="librarian-dashboard" style={{
-                backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: '550px 550px',
-                backgroundAttachment: 'fixed'
-            }}>
+            <div className="librarian-dashboard">
+                <div className="blurred-watermark" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')` }} />
                 <SpinningCrescents />
                 <div className="dashboard-content">
                     {/* Hero Section */}

@@ -10,7 +10,7 @@
     opacity: 1;
 }
 
-/* NextPhases Swirl Watermark — glass effect (applied via inline styles in JSX) */
+/* NextPhases Swirl Watermark — blurred glass animation (via .blurred-watermark in App.css) */
 
 /* Loading Spinner */
 .loading-spinner {

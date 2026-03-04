@@ -167,13 +167,8 @@ function IncidentPage() {
                 </div>
             )}
 
-            <div className="incident-container" style={{
-                backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: '550px 550px',
-                backgroundAttachment: 'fixed'
-            }}>
+            <div className="incident-container">
+                <div className="blurred-watermark" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')` }} />
                 <SpinningCrescents />
                 <div className="incident-content">
                     {/* Back Button */}

@@ -246,13 +246,8 @@ function AttendancePage() {
         return (
             <>
                 <Navbar />
-                <div className="attendance-container" style={{
-                    backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    backgroundSize: 'contain',
-                    backgroundAttachment: 'fixed'
-                }}>
+                <div className="attendance-container">
+                    <div className="blurred-watermark" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')` }} />
                     <SpinningCrescents />
                     <div className="loading-spinner">
                         <div className="spinner"></div>
@@ -266,13 +261,8 @@ function AttendancePage() {
     return (
         <>
             <Navbar />
-            <div className="attendance-container" style={{
-                backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                backgroundSize: '550px 550px',
-                backgroundAttachment: 'fixed'
-            }}>
+            <div className="attendance-container">
+                <div className="blurred-watermark" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')` }} />
                 <SpinningCrescents />
                 <div className="attendance-content">
                     {/* Back Button */}

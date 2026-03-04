@@ -57,13 +57,8 @@ function Login({ setAuth }) {
     };
 
     return (
-        <div className="login-container" style={{
-            backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            backgroundSize: '550px 550px',
-            backgroundAttachment: 'fixed'
-        }}>
+        <div className="login-container">
+            <div className="blurred-watermark" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/nextphases-swirl.png')` }} />
             <SpinningCrescents />
             <div className="login-card">
                 <h2>Exam Invigilator Login</h2>
