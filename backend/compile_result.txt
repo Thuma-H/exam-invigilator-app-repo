@@ -1,0 +1,8 @@
+﻿cmd : 'C:\Program' is not recognized as an internal or external command,
+At line:1 char:80
++ ... nvigilator-app-repo\backend" ; cmd /c "mvnw.cmd compile" 2>&1 | Out-F ...
++                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ('C:\Program' is...ternal command,:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+operable program or batch file.

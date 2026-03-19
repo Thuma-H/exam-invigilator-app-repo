@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class BarcodeScan {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "scanned_barcode", nullable = false)

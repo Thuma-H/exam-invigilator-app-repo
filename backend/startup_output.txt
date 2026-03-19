@@ -1,0 +1,240 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.0)
+
+2026-03-08T20:54:06.514+02:00  INFO 15144 --- [           main] com.examapp.ExamInvigilatorApplication   : Starting ExamInvigilatorApplication v1.0.0 using Java 25 with PID 15144 (C:\Users\Christopher\OneDrive\Desktop\exam-invigilator-app-repo\backend\target\exam-invigilator-1.0.0.jar started by Christopher in C:\Users\Christopher\OneDrive\Desktop\exam-invigilator-app-repo\backend)
+2026-03-08T20:54:06.517+02:00  INFO 15144 --- [           main] com.examapp.ExamInvigilatorApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-03-08T20:54:08.023+02:00  INFO 15144 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-08T20:54:08.166+02:00  INFO 15144 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 117 ms. Found 9 JPA repository interfaces.
+2026-03-08T20:54:09.458+02:00  INFO 15144 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-03-08T20:54:09.492+02:00  INFO 15144 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-08T20:54:09.492+02:00  INFO 15144 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-03-08T20:54:09.550+02:00  INFO 15144 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-03-08T20:54:09.551+02:00  INFO 15144 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2938 ms
+2026-03-08T20:54:10.420+02:00  INFO 15144 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-08T20:54:10.641+02:00  INFO 15144 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2026-03-08T20:54:10.812+02:00  INFO 15144 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-03-08T20:54:12.046+02:00  INFO 15144 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-08T20:54:12.123+02:00  INFO 15144 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-08T20:54:14.483+02:00  INFO 15144 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@2a19a0fe
+2026-03-08T20:54:14.486+02:00  INFO 15144 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-08T20:54:14.560+02:00  INFO 15144 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.1
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-08T20:54:18.846+02:00  INFO 15144 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table attendance (id integer, marked_at timestamp, marked_by varchar(255), method varchar(255), status varchar(255) not null, exam_id bigint not null, student_id bigint not null, primary key (id))
+Hibernate: create table barcode_scans (id integer, error_message varchar(255), ip_address varchar(255), scan_timestamp timestamp not null, scanned_barcode varchar(255) not null, scanned_by varchar(255) not null, validation_status varchar(255) not null, exam_id bigint, student_id bigint, primary key (id))
+Hibernate: create table courses (id integer, course_code varchar(255) not null unique, course_name varchar(255) not null, credit_hours integer, department varchar(255) not null, instructor varchar(255), registration_date timestamp, primary key (id))
+Hibernate: create table exam_invigilators (exam_id bigint not null, invigilator_id bigint not null)
+Hibernate: create table exam_students (exam_id bigint not null, student_id bigint not null)
+Hibernate: create table exams (id integer, course_code varchar(255) not null, course_name varchar(255) not null, duration integer not null, exam_date date not null, max_students integer, start_time time(6) not null, status varchar(255) not null, venue varchar(255), invigilator_id bigint not null, room_id bigint not null, primary key (id))
+Hibernate: create table incidents (id integer, category varchar(255) not null, description varchar(1000) not null, evidence_file varchar(255), reported_at timestamp not null, reported_by varchar(255) not null, severity varchar(255) not null, exam_id bigint not null, student_id bigint, primary key (id))
+Hibernate: create table notification_logs (id integer, error_message varchar(255), notification_type varchar(255) not null, recipient_email varchar(255) not null, related_entity_id bigint, sent_at timestamp not null, status varchar(255) not null, subject varchar(255) not null, primary key (id))
+Hibernate: create table rooms (id integer, building varchar(255) not null, capacity integer not null, floor integer, room_name varchar(255) not null unique, primary key (id))
+Hibernate: create table students (id integer, email varchar(255), full_name varchar(255) not null, program varchar(255) not null, registration_date timestamp, student_id varchar(255) not null unique, verified boolean not null, primary key (id))
+Hibernate: create table users (id integer, department varchar(255), email varchar(255), full_name varchar(255) not null, password varchar(255) not null, role varchar(255) not null, username varchar(255) not null unique, primary key (id))
+Hibernate: alter table courses drop constraint UKp02ts69sh53ptd62m3c67v0
+Hibernate: create index idx_exams_date on exams (exam_date)
+Hibernate: create index idx_exams_room_id on exams (room_id)
+Hibernate: create index idx_exams_start_time on exams (start_time)
+Hibernate: create index idx_exams_date_start_time on exams (exam_date, start_time)
+Hibernate: alter table rooms drop constraint UK36daphag00mnxmwforqperdnb
+Hibernate: alter table students drop constraint UK5mbus2m1tm2acucrp6t627jmx
+Hibernate: alter table users drop constraint UKr43af9ap4edm43mmtq01oddj6
+2026-03-08T20:54:19.749+02:00  INFO 15144 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-08T20:54:21.220+02:00  INFO 15144 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-08T20:54:23.120+02:00  WARN 15144 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-08T20:54:24.070+02:00  WARN 15144 --- [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: e2377584-b37f-4538-af4e-4081c136960c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-03-08T20:54:24.100+02:00  INFO 15144 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-03-08T20:54:25.935+02:00  INFO 15144 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-03-08T20:54:26.017+02:00  INFO 15144 --- [           main] com.examapp.ExamInvigilatorApplication   : Started ExamInvigilatorApplication in 20.547 seconds (process running for 21.846)
+
+    Database Migration Runner
+   Found 3 migration file(s)
+
+   >> Applying V1__create_core_tables.sql (8 statements)...
+   [OK] V1__create_core_tables.sql applied successfully
+   >> Applying V2__create_junction_tables.sql (4 statements)...
+   [OK] V2__create_junction_tables.sql applied successfully
+   >> Applying V3__seed_rooms_and_invigilators.sql (2 statements)...
+   [OK] V3__seed_rooms_and_invigilators.sql applied successfully
+
+   Database migrations complete.
+
+
+  Ensuring all users have correct credentials...
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: update users set department=?,email=?,full_name=?,password=?,role=?,username=? where id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: insert into users (department,email,full_name,password,role,username) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: insert into users (department,email,full_name,password,role,username) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: insert into users (department,email,full_name,password,role,username) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: insert into users (department,email,full_name,password,role,username) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: insert into users (department,email,full_name,password,role,username) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: select count(*) from users u1_0
+  ? Users: 5 created, 10 password(s) fixed, 15 total
+Hibernate: select count(*) from exams e1_0
+
+ Initializing sample data...
+
+Hibernate: select count(*) from rooms r1_0
+  Rooms already seeded by migration V3
+Hibernate: insert into courses (course_code,course_name,credit_hours,department,instructor,registration_date) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into courses (course_code,course_name,credit_hours,department,instructor,registration_date) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into courses (course_code,course_name,credit_hours,department,instructor,registration_date) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into courses (course_code,course_name,credit_hours,department,instructor,registration_date) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into courses (course_code,course_name,credit_hours,department,instructor,registration_date) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+? Created 5 courses
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into students (email,full_name,program,registration_date,student_id,verified) values (?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+? Created 8 students
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.room_name=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.room_name=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.room_name=?
+Hibernate: select s1_0.id,s1_0.email,s1_0.full_name,s1_0.program,s1_0.registration_date,s1_0.student_id,s1_0.verified from students s1_0
+Hibernate: insert into exams (course_code,course_name,duration,exam_date,invigilator_id,max_students,room_id,start_time,status,venue) values (?,?,?,?,?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into exam_invigilators (exam_id,invigilator_id) values (?,?)
+Hibernate: insert into exam_invigilators (exam_id,invigilator_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exams (course_code,course_name,duration,exam_date,invigilator_id,max_students,room_id,start_time,status,venue) values (?,?,?,?,?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into exam_invigilators (exam_id,invigilator_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exams (course_code,course_name,duration,exam_date,invigilator_id,max_students,room_id,start_time,status,venue) values (?,?,?,?,?,?,?,?,?,?)
+Hibernate: select last_insert_rowid()
+Hibernate: insert into exam_invigilators (exam_id,invigilator_id) values (?,?)
+Hibernate: insert into exam_invigilators (exam_id,invigilator_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+Hibernate: insert into exam_students (exam_id,student_id) values (?,?)
+? Created 3 exams with enrolled students and assigned invigilators
+
+ Sample data created successfully!
+ Default Login: invigilator1 / password123
+
+
+===========================================
+? Exam Invigilator API is running!
+? Server: http://localhost:8080
+? API Base: http://localhost:8080/api
+===========================================
+
+2026-03-08T20:55:33.996+02:00  INFO 15144 --- [0.0-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-08T20:55:33.999+02:00  INFO 15144 --- [0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-03-08T20:55:34.076+02:00  INFO 15144 --- [0.0-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 75 ms
+[AUTH] Login attempt for user: invigilator1
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+[AUTH] ? Login successful for: invigilator1 (role=INVIGILATOR)
+[AUTH] Login attempt for user: librarian1
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+[AUTH] ? Login successful for: librarian1 (role=LIBRARIAN)
+[AUTH] Login attempt for user: librarian2
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+[AUTH] ? Login successful for: librarian2 (role=LIBRARIAN)
+[AUTH] Login attempt for user: admin
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.username=?
+[AUTH] ? Login successful for: admin (role=ADMIN)
+Hibernate: select e1_0.id,e1_0.course_code,e1_0.course_name,e1_0.duration,e1_0.exam_date,e1_0.invigilator_id,e1_0.max_students,e1_0.room_id,e1_0.start_time,e1_0.status,e1_0.venue from exams e1_0
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0
+Hibernate: select e1_0.id,e1_0.course_code,e1_0.course_name,e1_0.duration,e1_0.exam_date,e1_0.invigilator_id,e1_0.max_students,e1_0.room_id,e1_0.start_time,e1_0.status,e1_0.venue from exams e1_0
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.id=?
+Hibernate: select u1_0.id,u1_0.department,u1_0.email,u1_0.full_name,u1_0.password,u1_0.role,u1_0.username from users u1_0 where u1_0.id=?
+Hibernate: select r1_0.id,r1_0.building,r1_0.capacity,r1_0.floor,r1_0.room_name from rooms r1_0 where r1_0.id=?

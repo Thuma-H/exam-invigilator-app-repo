@@ -28,15 +28,22 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
+            System.out.println("[AUTH] Login attempt for user: " + loginRequest.getUsername());
             LoginResponse response = authService.login(loginRequest);
 
             if (response != null) {
+                System.out.println("[AUTH] ✓ Login successful for: " + loginRequest.getUsername()
+                        + " (role=" + response.getRole() + ")");
                 return ResponseEntity.ok(response);
             } else {
+                System.out.println("[AUTH] ✗ Login FAILED for: " + loginRequest.getUsername()
+                        + " — invalid username or password");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Invalid username or password");
             }
         } catch (Exception e) {
+            System.err.println("[AUTH] ✗ Login ERROR for: " + loginRequest.getUsername()
+                    + " — " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Login failed: " + e.getMessage());
         }

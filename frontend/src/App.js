@@ -10,6 +10,7 @@ import IncidentPage from './pages/IncidentPage';
 import ReportsPage from './pages/ReportsPage';
 import BarcodeManagementPage from './pages/BarcodeManagementPage';
 import StudentRegistrationPage from './pages/StudentRegistrationPage';
+import ExamSchedulerPage from './pages/ExamSchedulerPage';
 
 function App() {
     // Initialize auth state immediately from storage (prevents redirect flash on refresh)
@@ -98,6 +99,7 @@ function App() {
                 <Route path="/reports/:examId" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
                 <Route path="/barcodes" element={<ProtectedRoute><BarcodeManagementPage /></ProtectedRoute>} />
                 <Route path="/register-student" element={<ProtectedRoute><StudentRegistrationPage /></ProtectedRoute>} />
+                <Route path="/exam-scheduler" element={<ProtectedRoute><ExamSchedulerPage /></ProtectedRoute>} />
 
                 {/* Redirect unknown routes to dashboard */}
                 <Route path="*" element={<Navigate to="/" />} />

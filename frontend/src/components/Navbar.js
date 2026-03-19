@@ -74,6 +74,19 @@ function Navbar() {
                 </div>
 
                 <div className="navbar-actions">
+                    {/* Schedule button for all authenticated users */}
+                    <button
+                        onClick={() => navigate('/exam-scheduler')}
+                        className="scheduler-btn"
+                        title="Manage Exam Schedule"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                        <span>Schedule</span>
+                    </button>
+
                     {role === 'LIBRARIAN' && (
                         <button
                             onClick={() => navigate('/notifications')}

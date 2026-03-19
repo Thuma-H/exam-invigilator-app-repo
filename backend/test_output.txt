@@ -1,0 +1,2 @@
+ROOMS: [{"id":1,"roomName":"LT-001","capacity":120,"building":"Science Block","floor":1},{"id":2,"roomName":"LT-002","capacity":80,"building":"Science Block","floor":2},{"id":3,"roomName":"LAB-A","capacity":40,"building":"Engineering Block","floor":1},{"id":4,"roomName":"LAB-B","capacity":40,"building":"Engineering Block","floor":1},{"id":5,"roomName":"MAIN-HALL","capacity":300,"building":"Administration","floor":0}]
+CONFLICTS: {"hasConflicts":false,"conflicts":[]}

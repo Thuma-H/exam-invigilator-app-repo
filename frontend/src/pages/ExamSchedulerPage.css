@@ -1,0 +1,507 @@
+.exam-scheduler-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, rgba(20, 31, 72, 0.8) 0%, rgba(30, 60, 114, 0.8) 100%);
+    min-height: 100vh;
+}
+
+.exam-scheduler-container h1 {
+    color: white;
+    margin-bottom: 0;
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Header with Exit Button */
+.exam-scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.btn-exit {
+    background-color: rgba(220, 53, 69, 0.85);
+    color: white;
+    border: 1px solid rgba(220, 53, 69, 0.9);
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-exit:hover {
+    background-color: rgba(200, 35, 51, 1);
+    border-color: rgba(200, 35, 51, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+/* Conflict Warning Banner */
+.conflict-warning-banner {
+    background-color: #f8d7da;
+    border: 2px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #721c24;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.conflict-warning-banner strong {
+    color: #721c24;
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.filter-input {
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.filter-input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.filter-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-secondary {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    align-self: flex-end;
+    height: fit-content;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Calendar Wrapper - Dark Theme to match app */
+.calendar-wrapper {
+    position: relative;
+    background: linear-gradient(145deg, #141f48 0%, #1e3c72 50%, #141f48 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+/* Team Logo Watermark with Spinning Crescents */
+.calendar-watermark-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    height: 420px;
+    pointer-events: none;
+    z-index: 0;
+    user-select: none;
+}
+
+.calendar-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    opacity: 0.25;
+    filter: brightness(2) drop-shadow(0 0 20px rgba(74, 144, 226, 0.5));
+}
+
+/* Spinning Crescent Rings */
+.crescent-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: transparent;
+    pointer-events: none;
+}
+
+.crescent-ring-1 {
+    width: 240px;
+    height: 240px;
+    margin-top: -120px;
+    margin-left: -120px;
+    border-width: 3px;
+    border-top-color: rgba(74, 144, 226, 0.5);
+    border-right-color: rgba(135, 190, 255, 0.35);
+    animation: spinCrescent1 8s linear infinite;
+    filter: drop-shadow(0 0 4px rgba(74, 144, 226, 0.3));
+}
+
+.crescent-ring-2 {
+    width: 320px;
+    height: 320px;
+    margin-top: -160px;
+    margin-left: -160px;
+    border-width: 2.5px;
+    border-bottom-color: rgba(135, 190, 255, 0.4);
+    border-left-color: rgba(74, 144, 226, 0.3);
+    animation: spinCrescent2 12s linear infinite;
+    filter: drop-shadow(0 0 4px rgba(74, 144, 226, 0.2));
+}
+
+.crescent-ring-3 {
+    width: 400px;
+    height: 400px;
+    margin-top: -200px;
+    margin-left: -200px;
+    border-width: 2px;
+    border-top-color: rgba(74, 144, 226, 0.3);
+    border-right-color: rgba(135, 190, 255, 0.25);
+    animation: spinCrescent3 16s linear infinite;
+    filter: drop-shadow(0 0 3px rgba(74, 144, 226, 0.15));
+}
+
+@keyframes spinCrescent1 {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes spinCrescent2 {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+@keyframes spinCrescent3 {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* React Big Calendar - Dark Theme Styles */
+.calendar-wrapper .rbc-calendar {
+    position: relative;
+    z-index: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Toolbar */
+.calendar-wrapper .rbc-toolbar {
+    padding: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.calendar-wrapper .rbc-toolbar-label {
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-wrapper .rbc-toolbar button {
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(74, 144, 226, 0.4);
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.calendar-wrapper .rbc-toolbar button:hover {
+    background-color: rgba(74, 144, 226, 0.25);
+    border-color: rgba(74, 144, 226, 0.6);
+    color: white;
+}
+
+.calendar-wrapper .rbc-toolbar button.rbc-active {
+    background-color: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}
+
+/* Header row (day names) */
+.calendar-wrapper .rbc-header {
+    padding: 0.75rem 0.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 2px solid rgba(74, 144, 226, 0.3);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.calendar-wrapper .rbc-header + .rbc-header {
+    border-left: 1px solid rgba(74, 144, 226, 0.15);
+}
+
+/* Month view cells */
+.calendar-wrapper .rbc-month-view {
+    border: 1px solid rgba(74, 144, 226, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.calendar-wrapper .rbc-month-row {
+    border-top: none;
+}
+
+.calendar-wrapper .rbc-month-row + .rbc-month-row {
+    border-top: 1px solid rgba(74, 144, 226, 0.15);
+}
+
+.calendar-wrapper .rbc-day-bg {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.calendar-wrapper .rbc-day-bg + .rbc-day-bg {
+    border-left: 1px solid rgba(74, 144, 226, 0.12);
+}
+
+.calendar-wrapper .rbc-today {
+    background-color: rgba(74, 144, 226, 0.15) !important;
+}
+
+.calendar-wrapper .rbc-off-range-bg {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Date numbers */
+.calendar-wrapper .rbc-date-cell {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.35rem 0.5rem;
+}
+
+.calendar-wrapper .rbc-date-cell.rbc-off-range {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.calendar-wrapper .rbc-date-cell.rbc-now {
+    color: #4a90e2;
+    font-weight: 700;
+}
+
+/* Events */
+.calendar-wrapper .rbc-event {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-wrapper .rbc-event-content {
+    white-space: normal;
+    word-break: break-word;
+}
+
+.calendar-wrapper .rbc-selected {
+    background-color: #4a90e2 !important;
+}
+
+.calendar-wrapper .rbc-show-more {
+    color: #87beff;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: transparent !important;
+}
+
+.calendar-wrapper .rbc-show-more:hover {
+    text-decoration: underline;
+    color: #a8d0ff;
+}
+
+/* Week & Day view */
+.calendar-wrapper .rbc-time-view {
+    border: 1px solid rgba(74, 144, 226, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.calendar-wrapper .rbc-time-header-content {
+    border-left: 1px solid rgba(74, 144, 226, 0.15);
+}
+
+.calendar-wrapper .rbc-time-content {
+    border-top: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.calendar-wrapper .rbc-timeslot-group {
+    border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+}
+
+.calendar-wrapper .rbc-time-slot {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.calendar-wrapper .rbc-day-slot .rbc-time-slot {
+    border-top: 1px solid rgba(74, 144, 226, 0.08);
+}
+
+.calendar-wrapper .rbc-current-time-indicator {
+    background-color: #4a90e2;
+}
+
+/* Agenda view */
+.calendar-wrapper .rbc-agenda-view {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.calendar-wrapper .rbc-agenda-view table {
+    border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.calendar-wrapper .rbc-agenda-view table thead > tr > th {
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(74, 144, 226, 0.3);
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 0.75rem;
+}
+
+.calendar-wrapper .rbc-agenda-view table tbody > tr > td {
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+    padding: 0.5rem 0.75rem;
+}
+
+.calendar-wrapper .rbc-agenda-empty {
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Error Message */
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+/* Loading state */
+.exam-scheduler-container p {
+    color: white;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .exam-scheduler-container {
+        padding: 1rem;
+    }
+
+    .exam-scheduler-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .exam-scheduler-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .filter-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-secondary {
+        align-self: stretch;
+    }
+
+    .calendar-wrapper {
+        padding: 1rem;
+    }
+
+    .calendar-wrapper .rbc-calendar {
+        font-size: 0.85rem;
+    }
+
+    .calendar-wrapper .rbc-toolbar {
+        padding: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .calendar-wrapper .rbc-toolbar button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .calendar-watermark-container {
+        width: 280px;
+        height: 280px;
+    }
+
+    .calendar-watermark {
+        width: 120px;
+        height: 120px;
+    }
+
+    .crescent-ring-1 {
+        width: 170px;
+        height: 170px;
+        margin-top: -85px;
+        margin-left: -85px;
+    }
+
+    .crescent-ring-2 {
+        width: 220px;
+        height: 220px;
+        margin-top: -110px;
+        margin-left: -110px;
+    }
+
+    .crescent-ring-3 {
+        width: 270px;
+        height: 270px;
+        margin-top: -135px;
+        margin-left: -135px;
+    }
+}
+

@@ -30,8 +30,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
-<<<<<<< HEAD
- * BarcodeService - Generates and validates barcodes for student IDs
+ * BarcodeService - Generates and validates QR codes for student IDs
+ *
+ * Uses QR Code format for alphanumeric student numbers like BCS25165336
  *
  * SECURITY ARCHITECTURE:
  * 1. Barcode contains ONLY student ID (e.g., "BCS25165336")
@@ -39,10 +40,6 @@ import java.util.Optional;
  * 3. All scan attempts are logged for audit trail
  * 4. Rate limiting: Max 100 scans per minute per invigilator
  * 5. Validation: Student must exist AND be enrolled in exam
-=======
- * BarcodeService - Generates and manages QR codes for student IDs
- * Uses QR Code format for alphanumeric student numbers like BCS25165336
->>>>>>> Simon's-frontend
  */
 @Service
 public class BarcodeService {

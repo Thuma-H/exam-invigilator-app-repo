@@ -9,16 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Exam entity represents a scheduled examination session.
- * Contains exam details, timing, venue, and links to assigned invigilator.
+ * Exam entity — the central scheduling object.
+ *
+ * Key relationships:
+ *   • ManyToOne  → Room  (every exam happens in exactly one room)
+ *   • ManyToOne  → User  (primary / legacy single-invigilator FK)
+ *   • ManyToMany → User  (exam_invigilators junction — multi-invigilator support)
+ *   • ManyToMany → Student (exam_students junction — enrollment)
+ *
+ * @Table indexes mirror the SQL migration indexes so that queries on
+ * date, room_id, and start_time are fast (conflict detection depends on these).
  */
 @Entity
-@Table(name = "exams")
+@Table(
+    name = "exams",
+    indexes = {
+        @Index(name = "idx_exams_date",            columnList = "exam_date"),
+        @Index(name = "idx_exams_room_id",         columnList = "room_id"),
+        @Index(name = "idx_exams_start_time",      columnList = "start_time"),
+        @Index(name = "idx_exams_date_start_time", columnList = "exam_date, start_time")
+    }
+)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Exam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "course_code", nullable = false)
@@ -27,7 +43,8 @@ public class Exam {
     @Column(name = "course_name", nullable = false)
     private String courseName;
 
-    @Column(nullable = false)
+    // Legacy string venue — kept for backward compatibility
+    @Column(nullable = true)
     private String venue;
 
     @Column(name = "exam_date", nullable = false)
@@ -39,16 +56,41 @@ public class Exam {
     @Column(nullable = false)
     private Integer duration; // Duration in minutes
 
+    // Exam lifecycle: SCHEDULED → ACTIVE → COMPLETED | CANCELLED
+    @Column(nullable = false)
+    private String status = "SCHEDULED";
+
+    // Optional enrolment cap; when NULL the room's capacity is the limit
+    @Column(name = "max_students")
+    private Integer maxStudents;
+
+    // ── Room (ManyToOne) — every exam is held in exactly one room ───────
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "room_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Room room;
+
+    // ── Primary invigilator (legacy single-assign FK) ───────────────────
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "invigilator_id", nullable = false)
     @JsonIgnoreProperties({"password", "authorities"})
-    private User invigilator; // Which invigilator is assigned
+    private User invigilator;
 
-    // Many-to-Many relationship with students
+    // ── Multi-invigilator support (exam_invigilators junction table) ────
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "exam_invigilators",
+            joinColumns        = @JoinColumn(name = "exam_id"),
+            inverseJoinColumns = @JoinColumn(name = "invigilator_id")
+    )
+    @JsonIgnoreProperties({"password", "authorities"})
+    private List<User> invigilators = new ArrayList<>();
+
+    // ── Student enrollment (exam_students junction table) ───────────────
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "exam_students",
-            joinColumns = @JoinColumn(name = "exam_id"),
+            joinColumns        = @JoinColumn(name = "exam_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     @JsonIgnore
@@ -69,75 +111,42 @@ public class Exam {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getCourseCode() { return courseCode; }
+    public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
 
-    public String getCourseCode() {
-        return courseCode;
-    }
+    public String getCourseName() { return courseName; }
+    public void setCourseName(String courseName) { this.courseName = courseName; }
 
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
+    public String getVenue() { return venue; }
+    public void setVenue(String venue) { this.venue = venue; }
 
-    public String getCourseName() {
-        return courseName;
-    }
+    public LocalDate getExamDate() { return examDate; }
+    public void setExamDate(LocalDate examDate) { this.examDate = examDate; }
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
+    public LocalTime getStartTime() { return startTime; }
+    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
 
-    public String getVenue() {
-        return venue;
-    }
+    public Integer getDuration() { return duration; }
+    public void setDuration(Integer duration) { this.duration = duration; }
 
-    public void setVenue(String venue) {
-        this.venue = venue;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public LocalDate getExamDate() {
-        return examDate;
-    }
+    public Integer getMaxStudents() { return maxStudents; }
+    public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }
 
-    public void setExamDate(LocalDate examDate) {
-        this.examDate = examDate;
-    }
+    public Room getRoom() { return room; }
+    public void setRoom(Room room) { this.room = room; }
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
+    public User getInvigilator() { return invigilator; }
+    public void setInvigilator(User invigilator) { this.invigilator = invigilator; }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
+    public List<User> getInvigilators() { return invigilators; }
+    public void setInvigilators(List<User> invigilators) { this.invigilators = invigilators; }
 
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public User getInvigilator() {
-        return invigilator;
-    }
-
-    public void setInvigilator(User invigilator) {
-        this.invigilator = invigilator;
-    }
-
-    public List<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<Student> students) {
-        this.students = students;
-    }
+    public List<Student> getStudents() { return students; }
+    public void setStudents(List<Student> students) { this.students = students; }
 }

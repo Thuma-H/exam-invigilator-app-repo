@@ -107,6 +107,7 @@
             <version>4.0.0</version>
         </dependency>
 
+
         <!-- Dev Tools (Auto-restart) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -121,6 +122,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Suppress SQLite JDBC native-access warnings on Java 21+ -->
+                    <jvmArguments>--enable-native-access=ALL-UNNAMED</jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

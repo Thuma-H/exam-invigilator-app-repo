@@ -18,7 +18,7 @@ if [ -f "$MAVEN_CMD" ]; then
         # Try to run JAR
         if [ -f "target/exam-invigilator-1.0.0.jar" ]; then
             echo "=== Starting Backend ==="
-            java -jar target/exam-invigilator-1.0.0.jar
+            java --enable-native-access=ALL-UNNAMED -jar target/exam-invigilator-1.0.0.jar
         else
             echo "❌ JAR not found"
         fi

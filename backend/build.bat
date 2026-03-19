@@ -41,17 +41,26 @@ if %ERRORLEVEL% equ 0 (
     if exist "target\exam-invigilator-1.0.0.jar" (
         echo [Step 3/3] Starting Backend Server...
         echo.
+
+        REM Kill any existing process on port 8080 to prevent "Port already in use" error
+        echo Checking for existing processes on port 8080...
+        for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8080" ^| findstr "LISTENING" 2^>nul') do (
+            echo Killing old process PID %%a on port 8080...
+            taskkill /PID %%a /F >nul 2>&1
+        )
+        timeout /t 2 /nobreak >nul
+
         echo ============================================
-        echo 📍 Server starting on http://localhost:8080
-        echo 📚 API Base: http://localhost:8080/api
+        echo Server starting on http://localhost:8080
+        echo API Base: http://localhost:8080/api
         echo.
-        echo 🔑 Default Login Credentials:
-        echo    Username: invigilator1
+        echo Default Login Credentials:
+        echo    Username: jdoe
         echo    Password: password123
         echo ============================================
         echo.
 
-        java -jar target\exam-invigilator-1.0.0.jar
+        java --enable-native-access=ALL-UNNAMED -jar target\exam-invigilator-1.0.0.jar
     ) else (
         echo ❌ ERROR: JAR file not found at target\exam-invigilator-1.0.0.jar
         pause
