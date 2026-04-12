@@ -260,7 +260,7 @@ function ExamSchedulerModal({ isOpen, mode, event, onSave, onDelete, onClose, in
                                     <option value="">-- Select Invigilator --</option>
                                     {invigilators.map(inv => (
                                         <option key={inv.id} value={inv.id}>
-                                            {inv.fullName || inv.username} (ID: {inv.id})
+                                            {inv.fullName || inv.username} (@{inv.username}, ID: {inv.id})
                                         </option>
                                     ))}
                                 </select>

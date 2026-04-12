@@ -439,6 +439,19 @@
     font-weight: 600;
 }
 
+.exam-timer-inline {
+    margin: -0.25rem 0 1rem 0;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.95);
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
 /* Exam Actions */
 .exam-actions {
     display: flex;
@@ -506,81 +519,82 @@
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
-/* Mobile Responsiveness */
+/* ==================== Mobile Responsiveness ==================== */
 @media (max-width: 768px) {
     .dashboard-container {
-        padding: 1rem;
-    }
-
-    .dashboard-content {
-        padding: 0;
+        padding: 0.75rem;
     }
 
     .page-hero {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1.5rem;
+        gap: 1rem;
         padding: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .hero-content {
         width: 100%;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
     }
 
     .hero-icon {
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
     }
 
     .hero-text h1 {
         font-size: 1.5rem;
     }
 
-    .hero-stats {
-        width: 100%;
-        justify-content: space-between;
+    .dashboard-grid {
+        display: block;
     }
 
-    .stat-card {
-        flex: 1;
-        min-width: auto;
-        padding: 1rem;
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-    }
-
-    .exams-section {
-        padding: 1.5rem;
-    }
-
-    .exams-grid {
-        grid-template-columns: 1fr;
+    .dashboard-item {
+        width: 100% !important;
+        margin-bottom: 1rem;
     }
 
     .exam-card {
-        padding: 1.25rem;
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
     }
 
-    .exam-title h3 {
-        font-size: 1.25rem;
+    .card-header {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    .exam-details {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
+    .student-list {
+        display: block;
     }
 
-    .btn-action {
-        font-size: 0.9rem;
-        padding: 0.75rem 1rem;
+    .student-item {
+        width: 100%;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
     }
 }
 
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 0.5rem;
+    }
+
+    .page-hero {
+        padding: 1rem;
+    }
+
+    .hero-text h1 {
+        font-size: 1.25rem;
+    }
+
+    .dashboard-item h3 {
+        font-size: 1.1rem;
+    }
+}
 
 /* Toast Notification Styles */
 .toast-notification {

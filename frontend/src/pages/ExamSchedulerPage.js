@@ -23,6 +23,7 @@ function ExamSchedulerPage() {
     const [modalMode, setModalMode] = useState('create'); // 'create' or 'edit'
     const [conflicts, setConflicts] = useState([]);
     const [invigilators, setInvigilators] = useState([]);
+    const [successMessage, setSuccessMessage] = useState('');
 
     // Filter states
     const [filterDate, setFilterDate] = useState('');
@@ -90,6 +91,34 @@ function ExamSchedulerPage() {
         } catch (err) {
             console.error('Failed to fetch invigilators:', err);
             // Non-critical, silently fail — user can still type ID manually
+        }
+    };
+
+    const addLibrarianNotification = (message, examName) => {
+        const notification = {
+            id: Date.now(),
+            message,
+            examName,
+            timestamp: Date.now()
+        };
+        const existing = JSON.parse(localStorage.getItem('notifications') || '[]');
+        existing.unshift(notification);
+        localStorage.setItem('notifications', JSON.stringify(existing));
+    };
+
+    const handleClearPastExams = async () => {
+        const confirmed = window.confirm('Clear all past exams? This will remove ended exams from the system.');
+        if (!confirmed) return;
+        try {
+            const response = await apiService.clearPastExams();
+            const deletedCount = response?.data?.deletedCount ?? 0;
+            setSuccessMessage(`Cleared ${deletedCount} past exam(s).`);
+            setError('');
+            await fetchExams();
+        } catch (err) {
+            console.error('Failed to clear past exams:', err);
+            setError(`Failed to clear past exams: ${err.message || 'Unknown error'}`);
+            setSuccessMessage('');
         }
     };
 
@@ -213,6 +242,14 @@ function ExamSchedulerPage() {
                     }
                 };
                 setExams([...exams, newEvent]);
+                const examName = `${examData.courseCode} - ${examData.courseName}`;
+                if (isLibrarian) {
+                    addLibrarianNotification(
+                        `Exam scheduled successfully: ${examName} on ${examData.date} at ${examData.startTime}`,
+                        examName
+                    );
+                }
+                setSuccessMessage(`Scheduled exam: ${examName}`);
             } else {
                 await apiService.updateExam(selectedEvent.id, examPayload);
 
@@ -231,6 +268,14 @@ function ExamSchedulerPage() {
                           }
                         : exam
                 ));
+                const examName = `${examData.courseCode} - ${examData.courseName}`;
+                if (isLibrarian) {
+                    addLibrarianNotification(
+                        `Exam schedule updated: ${examName} on ${examData.date} at ${examData.startTime}`,
+                        examName
+                    );
+                }
+                setSuccessMessage(`Updated exam: ${examName}`);
             }
             setShowModal(false);
             setSelectedEvent(null);
@@ -240,6 +285,7 @@ function ExamSchedulerPage() {
             // Show the actual backend error message
             const msg = err.message || 'Unknown error';
             setError(`Failed to save exam: ${msg}`);
+            setSuccessMessage('');
         }
     };
 
@@ -250,9 +296,11 @@ function ExamSchedulerPage() {
                 setExams(exams.filter(exam => exam.id !== examId));
                 setShowModal(false);
                 setSelectedEvent(null);
+                setSuccessMessage('Exam deleted successfully.');
             } catch (err) {
                 console.error('Failed to delete exam:', err);
                 setError('Failed to delete exam. Please try again.');
+                setSuccessMessage('');
             }
         }
     };
@@ -301,6 +349,7 @@ function ExamSchedulerPage() {
             </div>
 
             {error && <div className="error-message">{error}</div>}
+            {successMessage && <div className="success-message">{successMessage}</div>}
 
             {conflicts.length > 0 && (
                 <div className="conflict-warning-banner">
@@ -364,6 +413,9 @@ function ExamSchedulerPage() {
                     className="btn btn-secondary"
                 >
                     Clear Filters
+                </button>
+                <button onClick={handleClearPastExams} className="btn btn-secondary">
+                    Clear Past Exams
                 </button>
             </div>
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import AddStudentModal from '../components/AddStudentModal';
+import ExamTimer from '../components/ExamTimer';
 import apiService, { addStudentToExam, removeStudentFromExam } from '../services/apiService';
 import './Dashboard.css';
 import SpinningCrescents from '../components/SpinningCrescents';
@@ -14,6 +15,7 @@ const Dashboard = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedExam, setSelectedExam] = useState(null);
     const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    const [now, setNow] = useState(new Date());
     const navigate = useNavigate();
 
     const activeCount = exams.filter(e => e.status === 'ONGOING').length;
@@ -32,14 +34,30 @@ const Dashboard = () => {
         loadExams();
     }, []);
 
-    // Recompute statuses every 30 seconds so exams go ONGOING/COMPLETED in real time
+    // Keep dashboard in sync with new schedules made by librarians.
     useEffect(() => {
         const interval = setInterval(() => {
+            loadExams(true);
+        }, 5000);
+
+        const onFocus = () => loadExams(true);
+        window.addEventListener('focus', onFocus);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('focus', onFocus);
+        };
+    }, []);
+
+    // Recompute statuses every second so timer/status stay live.
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setNow(new Date());
             setExams(prev => prev.map(exam => ({
                 ...exam,
                 status: computeExamStatus(exam)
             })));
-        }, 30000);
+        }, 1000);
         return () => clearInterval(interval);
     }, []);
 
@@ -96,6 +114,21 @@ const Dashboard = () => {
         setShowAddModal(true);
     };
 
+    const handleClearPastExams = async () => {
+        const confirmed = window.confirm('Clear all past exams? This will remove ended exams from the system.');
+        if (!confirmed) return;
+
+        try {
+            const response = await apiService.clearPastExams();
+            const deletedCount = response?.data?.deletedCount ?? 0;
+            showToast(`Cleared ${deletedCount} past exam(s).`, 'success');
+            await loadExams();
+        } catch (err) {
+            console.error('Failed to clear past exams:', err);
+            showToast(`Failed to clear past exams: ${err.message}`, 'error');
+        }
+    };
+
     const handleCloseAddModal = () => {
         setShowAddModal(false);
         setSelectedExam(null);
@@ -103,11 +136,7 @@ const Dashboard = () => {
 
     // Compute exam status from date, startTime, and duration
     const computeExamStatus = (exam) => {
-        if (exam.status) return exam.status; // If backend already provides it
-
         try {
-            const now = new Date();
-
             // Parse examDate and startTime
             // examDate = "2026-02-26", startTime = "09:00:00" or "09:00"
             const dateParts = exam.examDate;
@@ -128,9 +157,63 @@ const Dashboard = () => {
         }
     };
 
-    const loadExams = async () => {
+    const getExamTimerText = (exam) => {
         try {
-            setLoading(true);
+            const dateParts = exam.examDate;
+            const timeParts = exam.startTime;
+            if (!dateParts || !timeParts) return 'Timer unavailable';
+
+            const examStart = new Date(`${dateParts}T${timeParts}`);
+            const durationMs = (exam.duration || 120) * 60 * 1000;
+            const examEnd = new Date(examStart.getTime() + durationMs);
+
+            const formatDiff = (ms) => {
+                const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                return `${hours.toString().padStart(2, '0')}:${minutes
+                    .toString()
+                    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+
+            if (now < examStart) return `Starts in ${formatDiff(examStart - now)}`;
+            if (now <= examEnd) return `Time left ${formatDiff(examEnd - now)}`;
+            return 'Exam ended';
+        } catch {
+            return 'Timer unavailable';
+        }
+    };
+
+    const getTimerExam = () => {
+        if (!exams.length) return null;
+
+        const sorted = [...exams].sort((a, b) => {
+            const aStart = new Date(`${a.examDate}T${a.startTime}`).getTime();
+            const bStart = new Date(`${b.examDate}T${b.startTime}`).getTime();
+            return aStart - bStart;
+        });
+
+        // Prefer active exam first.
+        const activeExam = sorted.find((exam) => computeExamStatus(exam) === 'ONGOING');
+        if (activeExam) return activeExam;
+
+        // Otherwise show the next scheduled exam in the future.
+        const upcoming = sorted.find((exam) => {
+            const start = new Date(`${exam.examDate}T${exam.startTime}`);
+            return start > now;
+        });
+        if (upcoming) return upcoming;
+
+        // Fallback to most recent exam when everything is completed.
+        return sorted[sorted.length - 1];
+    };
+
+    const timerExam = getTimerExam();
+
+    const loadExams = async (silent = false) => {
+        try {
+            if (!silent) setLoading(true);
             const response = await apiService.getMyExams();
             // apiService returns { data: ... } or raw array
             const payload = response && response.data ? response.data : response;
@@ -161,7 +244,7 @@ const Dashboard = () => {
             setError('Failed to load exams: ' + err.message);
             console.error('Error loading exams:', err);
         } finally {
-            setLoading(false);
+            if (!silent) setLoading(false);
         }
     };
 
@@ -219,6 +302,7 @@ const Dashboard = () => {
     return (
         <>
             <Navbar />
+            {timerExam && <ExamTimer exam={timerExam} currentTime={now} />}
 
             {/* Toast Notification */}
             {toast.show && (
@@ -280,7 +364,12 @@ const Dashboard = () => {
                     )}
 
                     <div className="exams-section">
-                        <h2>My Assigned Exams</h2>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                            <h2 style={{ margin: 0 }}>My Assigned Exams</h2>
+                            <button className="btn-action btn-reports" onClick={handleClearPastExams}>
+                                Clear Past Exams
+                            </button>
+                        </div>
 
                         {exams.length === 0 ? (
                             <div className="no-exams">
@@ -319,6 +408,10 @@ const Dashboard = () => {
                                                 <span className="detail-label">Students</span>
                                                 <span className="detail-value">{exam.studentCount || 0}</span>
                                             </div>
+                                        </div>
+
+                                        <div className="exam-timer-inline">
+                                            {getExamTimerText(exam)}
                                         </div>
 
                                         <div className="exam-actions">

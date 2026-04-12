@@ -24,6 +24,7 @@ public interface ExamRepository extends JpaRepository<Exam, Long> {
      * @return List of exams assigned to this invigilator
      */
     List<Exam> findByInvigilator(User invigilator);
+    List<Exam> findByInvigilatorsContaining(User invigilator);
 
     /**
      * Find exams by date (useful for daily schedules)

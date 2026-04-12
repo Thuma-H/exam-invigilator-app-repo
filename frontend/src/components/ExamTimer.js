@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-function ExamTimer({ exam }) {
-    const [currentTime, setCurrentTime] = useState(new Date());
+function ExamTimer({ exam, currentTime }) {
+    const [internalTime, setInternalTime] = useState(new Date());
     const [examStatus, setExamStatus] = useState('NOT_STARTED');
     const [timeDisplay, setTimeDisplay] = useState('');
     const [isMinimized, setIsMinimized] = useState(false);
@@ -16,16 +16,18 @@ function ExamTimer({ exam }) {
     }, []);
 
     useEffect(() => {
+        if (currentTime) return undefined;
         const interval = setInterval(() => {
-            setCurrentTime(new Date());
+            setInternalTime(new Date());
         }, 1000);
-
         return () => clearInterval(interval);
-    }, []);
+    }, [currentTime]);
+
+    const effectiveCurrentTime = currentTime || internalTime;
 
     useEffect(() => {
         calculateExamStatus();
-    }, [currentTime]);
+    }, [effectiveCurrentTime, exam]);
 
     useEffect(() => {
         const handleMouseMove = (e) => {
@@ -62,7 +64,7 @@ function ExamTimer({ exam }) {
     const toggleMinimize = () => setIsMinimized((prev) => !prev);
 
     const calculateExamStatus = () => {
-        const now = new Date();
+        const now = effectiveCurrentTime;
         const examDate = new Date(exam.examDate);
         const [hours, minutes] = exam.startTime.split(':');
 

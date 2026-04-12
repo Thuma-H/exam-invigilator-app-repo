@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,6 +75,18 @@ public class ExamService {
         throw new RuntimeException("Either roomId or venue is required");
     }
 
+    /**
+     * Invigilator availability rule:
+     * allow multiple exams on the same day unless another exam starts at the exact same time.
+     */
+    private boolean hasExactInvigilatorTimeConflict(User invigilator, LocalDate examDate, LocalTime startTime, Long excludeExamId) {
+        List<Exam> sameDay = examRepository.findByInvigilatorAndExamDate(invigilator, examDate);
+        return sameDay.stream().anyMatch(exam -> {
+            if (excludeExamId != null && exam.getId().equals(excludeExamId)) return false;
+            return exam.getStartTime().equals(startTime);
+        });
+    }
+
     // ── Read operations ────────────────────────────────────────────────────
 
     /**
@@ -82,7 +97,38 @@ public class ExamService {
     public List<Exam> getExamsForInvigilator(String username) {
         User invigilator = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Invigilator not found"));
-        return examRepository.findByInvigilator(invigilator);
+
+        // Backward compatibility for legacy and canonical usernames.
+        // Example: invigilator1 <-> jdoe, invigilator2 <-> jsmith
+        List<User> effectiveInvigilators = new ArrayList<>();
+        effectiveInvigilators.add(invigilator);
+
+        if ("invigilator1".equalsIgnoreCase(username)) {
+            userRepository.findByUsername("jdoe").ifPresent(effectiveInvigilators::add);
+        } else if ("invigilator2".equalsIgnoreCase(username)) {
+            userRepository.findByUsername("jsmith").ifPresent(effectiveInvigilators::add);
+        } else if ("jdoe".equalsIgnoreCase(username)) {
+            userRepository.findByUsername("invigilator1").ifPresent(effectiveInvigilators::add);
+        } else if ("jsmith".equalsIgnoreCase(username)) {
+            userRepository.findByUsername("invigilator2").ifPresent(effectiveInvigilators::add);
+        }
+
+        // Merge both assignment modes without duplicates across effective accounts.
+        LinkedHashMap<Long, Exam> merged = new LinkedHashMap<>();
+        for (User user : effectiveInvigilators) {
+            List<Exam> primaryAssignments = examRepository.findByInvigilator(user);
+            List<Exam> multiAssignments = examRepository.findByInvigilatorsContaining(user);
+            primaryAssignments.forEach(exam -> merged.put(exam.getId(), exam));
+            multiAssignments.forEach(exam -> merged.put(exam.getId(), exam));
+        }
+
+        List<Exam> result = merged.values().stream().collect(Collectors.toList());
+        result.sort((a, b) -> {
+            int dateCompare = b.getExamDate().compareTo(a.getExamDate());
+            if (dateCompare != 0) return dateCompare;
+            return b.getStartTime().compareTo(a.getStartTime());
+        });
+        return result;
     }
 
     /**
@@ -187,15 +233,21 @@ public class ExamService {
         }
 
         // ── Invigilator conflicts ──────────────────────────────────────
-        List<Exam> invConflicts = filterActualOverlaps(
-                examRepository.findPotentialInvigilatorConflicts(invigilator, request.getExamDate(), proposedEnd),
-                request.getStartTime());
-        if (!invConflicts.isEmpty()) {
-            Exam c = invConflicts.get(0);
+        // Rule: same invigilator cannot have two exams with the exact same start time on the same date.
+        if (hasExactInvigilatorTimeConflict(invigilator, request.getExamDate(), request.getStartTime(), null)) {
+            Exam c = examRepository.findByInvigilatorAndExamDate(invigilator, request.getExamDate())
+                    .stream()
+                    .filter(e -> e.getStartTime().equals(request.getStartTime()))
+                    .findFirst()
+                    .orElse(null);
+            if (c != null) {
+                throw new ConflictException(String.format(
+                        "Invigilator %s is already assigned to '%s' on %s at %s",
+                        invigilator.getFullName(), c.getCourseName(), c.getExamDate(), c.getStartTime()));
+            }
             throw new ConflictException(String.format(
-                    "Invigilator %s is already assigned to '%s' on %s from %s to %s",
-                    invigilator.getFullName(), c.getCourseName(), c.getExamDate(),
-                    c.getStartTime(), c.getStartTime().plusMinutes(c.getDuration())));
+                    "Invigilator %s is already assigned on %s at %s",
+                    invigilator.getFullName(), request.getExamDate(), request.getStartTime()));
         }
 
         // ── Persist ────────────────────────────────────────────────────
@@ -208,6 +260,7 @@ public class ExamService {
         exam.setStartTime(request.getStartTime());
         exam.setDuration(request.getDuration());
         exam.setInvigilator(invigilator);
+        exam.setInvigilators(List.of(invigilator));
         exam.setStatus("SCHEDULED");
 
         Exam saved = examRepository.save(exam);
@@ -242,17 +295,22 @@ public class ExamService {
                     c.getStartTime(), c.getStartTime().plusMinutes(c.getDuration())));
         }
 
-        // Invigilator conflicts (exclude self)
-        List<Exam> invConflicts = filterActualOverlaps(
-                examRepository.findPotentialInvigilatorConflicts(invigilator, request.getExamDate(), proposedEnd),
-                request.getStartTime());
-        invConflicts.removeIf(e -> e.getId().equals(examId));
-        if (!invConflicts.isEmpty()) {
-            Exam c = invConflicts.get(0);
+        // Invigilator conflicts (exclude self): exact same start time on same date only.
+        if (hasExactInvigilatorTimeConflict(invigilator, request.getExamDate(), request.getStartTime(), examId)) {
+            Exam c = examRepository.findByInvigilatorAndExamDate(invigilator, request.getExamDate())
+                    .stream()
+                    .filter(e -> !e.getId().equals(examId))
+                    .filter(e -> e.getStartTime().equals(request.getStartTime()))
+                    .findFirst()
+                    .orElse(null);
+            if (c != null) {
+                throw new ConflictException(String.format(
+                        "Invigilator %s is already assigned to '%s' on %s at %s",
+                        invigilator.getFullName(), c.getCourseName(), c.getExamDate(), c.getStartTime()));
+            }
             throw new ConflictException(String.format(
-                    "Invigilator %s is already assigned to '%s' on %s from %s to %s",
-                    invigilator.getFullName(), c.getCourseName(), c.getExamDate(),
-                    c.getStartTime(), c.getStartTime().plusMinutes(c.getDuration())));
+                    "Invigilator %s is already assigned on %s at %s",
+                    invigilator.getFullName(), request.getExamDate(), request.getStartTime()));
         }
 
         // Apply updates
@@ -264,6 +322,7 @@ public class ExamService {
         existing.setStartTime(request.getStartTime());
         existing.setDuration(request.getDuration());
         existing.setInvigilator(invigilator);
+        existing.setInvigilators(List.of(invigilator));
 
         Exam updated = examRepository.save(existing);
         return ExamSchedulerResponse.fromExam(updated);
@@ -276,6 +335,39 @@ public class ExamService {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new RuntimeException("Exam not found with ID: " + examId));
         examRepository.delete(exam);
+    }
+
+    /**
+     * Delete all exams that have already ended.
+     * Past exam rule:
+     *  - exam date is before today, OR
+     *  - exam date is today and (start + duration) is before/equal current time
+     *
+     * @return number of deleted exams
+     */
+    public int clearPastExams() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Exam> allExams = examRepository.findAll();
+
+        List<Exam> pastExams = allExams.stream()
+                .filter(exam -> isPastExam(exam, now))
+                .collect(Collectors.toList());
+
+        for (Exam exam : pastExams) {
+            examRepository.delete(exam);
+        }
+
+        return pastExams.size();
+    }
+
+    private boolean isPastExam(Exam exam, LocalDateTime now) {
+        LocalDate examDate = exam.getExamDate();
+        LocalTime start = exam.getStartTime();
+        long durationMinutes = exam.getDuration() != null ? exam.getDuration().longValue() : 120L;
+
+        LocalDateTime examStart = LocalDateTime.of(examDate, start);
+        LocalDateTime examEnd = examStart.plusMinutes(durationMinutes);
+        return !examEnd.isAfter(now);
     }
 
     // ══════════════════════════════════════════════════════════════════════

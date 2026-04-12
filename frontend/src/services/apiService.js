@@ -149,6 +149,14 @@ const apiService = {
         return handleJsonResponse(response);
     },
 
+    clearPastExams: async () => {
+        const response = await fetch(`${API_BASE_URL}/exams/past`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        return handleJsonResponse(response);
+    },
+
     // ==================== ATTENDANCE ENDPOINTS ====================
 
     getAttendanceForExam: async (examId) => {
@@ -214,6 +222,11 @@ const apiService = {
         const response = await fetch(`${API_BASE_URL}/barcode/download/${encodeURIComponent(studentId)}`, { headers: getAuthHeaders() });
         // Return raw blob (frontend code expects a Blob)
         return handleBlobResponse(response);
+    },
+
+    getInvigilators: async () => {
+        const response = await fetch(`${API_BASE_URL}/auth/invigilators`, { headers: getAuthHeaders() });
+        return handleJsonResponse(response);
     },
 
     // ==================== ADD/DELETE STUDENT TO/FROM EXAM ====================

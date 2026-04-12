@@ -565,46 +565,100 @@
 /* ==================== Responsive ==================== */
 @media (max-width: 768px) {
     .librarian-dashboard {
-        padding: 1rem;
+        padding: 0.75rem;
     }
 
     .page-hero {
         flex-direction: column;
-        gap: 1.25rem;
+        align-items: flex-start;
+        gap: 1rem;
         padding: 1.5rem;
-        align-items: flex-start;
     }
 
-    .hero-stats {
-        width: 100%;
+    .librarian-container {
+        display: block;
+        padding: 1rem;
     }
 
-    .hero-stat-pill {
+    .librarian-grid {
+        display: block;
+    }
+
+    .librarian-card {
+        width: 100% !important;
+        margin-bottom: 1.5rem;
+    }
+
+    .librarian-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .student-table {
+        display: block;
+        font-size: 0.875rem;
+    }
+
+    .student-table thead {
+        display: none;
+    }
+
+    .student-table tbody tr {
+        display: block;
+        border: 1px solid #ddd;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+    }
+
+    .student-table td {
+        display: block;
+        padding: 0.5rem 0;
+        text-align: left;
+    }
+
+    .student-table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: inline-block;
+        width: 40%;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-buttons button {
         flex: 1;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        min-height: 44px;
     }
 
-    .lib-filters {
-        flex-direction: column;
-    }
-
-    .lib-search-wrap {
-        min-width: 100%;
-    }
-
-    .lib-filter-select {
+    .search-input {
         width: 100%;
+        min-height: 44px;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .librarian-dashboard {
+        padding: 0.5rem;
     }
 
-    .lib-table th,
-    .lib-table td {
-        padding: 0.65rem 0.75rem;
-        font-size: 0.8rem;
+    .page-hero {
+        padding: 1rem;
     }
 
-    .lib-notif-header {
+    .action-buttons {
         flex-direction: column;
-        gap: 0.75rem;
-        align-items: flex-start;
+    }
+
+    .action-buttons button {
+        width: 100%;
     }
 }
 
@@ -679,4 +733,3 @@
     font-weight: 400;
     letter-spacing: 0.3px;
 }
-

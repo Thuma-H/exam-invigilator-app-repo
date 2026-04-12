@@ -44,14 +44,14 @@ const AddStudentModal = ({ isOpen, onClose, onAddStudent, examId, examName }) =>
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
+        <div className="add-student-modal-overlay" onClick={onClose}>
+            <div className="add-student-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="add-student-modal-header">
                     <h2>Add Student to Exam</h2>
-                    <button className="modal-close" onClick={onClose}>✕</button>
+                    <button className="add-student-modal-close" onClick={onClose}>✕</button>
                 </div>
 
-                <div className="modal-body">
+                <div className="add-student-modal-body">
                     <div className="exam-info">
                         <strong>Exam:</strong> {examName}
                     </div>
@@ -115,7 +115,7 @@ const AddStudentModal = ({ isOpen, onClose, onAddStudent, examId, examName }) =>
                             />
                         </div>
 
-                        <div className="modal-actions">
+                        <div className="add-student-modal-actions">
                             <button
                                 type="button"
                                 className="btn-secondary"

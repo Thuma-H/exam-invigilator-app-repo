@@ -104,6 +104,23 @@ function LibrarianDashboard() {
         setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     };
 
+    const clearPastExams = async () => {
+        const confirmed = window.confirm('Clear all past exams? This will remove ended exams from the system.');
+        if (!confirmed) return;
+
+        try {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            const response = await axios.delete(`${API_CONFIG.BASE_URL}/exams/past`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const deletedCount = response?.data?.deletedCount ?? 0;
+            showMessage('success', `Cleared ${deletedCount} past exam(s).`);
+        } catch (error) {
+            console.error('Error clearing past exams:', error);
+            showMessage('error', 'Failed to clear past exams');
+        }
+    };
+
     const programs = ['ALL', ...new Set(students.map(s => s.program))];
 
     const filteredStudents = students.filter(student => {
@@ -146,6 +163,9 @@ function LibrarianDashboard() {
                                 <span className="hero-stat-value">{notifications.length}</span>
                                 <span className="hero-stat-label">Notifications</span>
                             </div>
+                            <button className="lib-notif-clear-all" onClick={clearPastExams}>
+                                Clear Past Exams
+                            </button>
                         </div>
                     </div>
 

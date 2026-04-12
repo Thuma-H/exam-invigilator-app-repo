@@ -2,6 +2,7 @@ package com.examapp.controller;
 
 import com.examapp.dto.LoginRequest;
 import com.examapp.dto.LoginResponse;
+import com.examapp.repository.UserRepository;
 import com.examapp.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Login endpoint
@@ -80,5 +84,19 @@ public class AuthController {
         // In a simple JWT implementation, logout is handled client-side by deleting the token
         // For production, you'd implement token blacklisting here
         return ResponseEntity.ok("Logged out successfully");
+    }
+
+    /**
+     * List all invigilators for scheduling dropdowns.
+     * Returns users with role=INVIGILATOR.
+     */
+    @GetMapping("/invigilators")
+    public ResponseEntity<?> getInvigilators() {
+        try {
+            return ResponseEntity.ok(userRepository.findByRole("INVIGILATOR"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to load invigilators: " + e.getMessage());
+        }
     }
 }

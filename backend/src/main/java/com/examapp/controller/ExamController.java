@@ -10,6 +10,7 @@ import com.examapp.util.JwtUtil;
 import com.examapp.repository.ExamRepository;
 import com.examapp.repository.StudentRepository;
 import com.examapp.repository.AttendanceRepository;
+import com.examapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,7 @@ public class ExamController {
     @Autowired private ExamRepository examRepository;
     @Autowired private StudentRepository studentRepository;
     @Autowired private AttendanceRepository attendanceRepository;
+    @Autowired private UserRepository userRepository;
 
     // ════════════════════════════════════════════════════════════════════
     //  GET /api/exams — list all exams as flat DTOs for the frontend
@@ -71,7 +73,15 @@ public class ExamController {
                 exams = examService.getAllExams();
             } else {
                 String username = extractUsername(authHeader);
-                exams = examService.getExamsForInvigilator(username);
+                var user = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+                // Librarians/Admins should see all exams in the scheduler.
+                if ("LIBRARIAN".equalsIgnoreCase(user.getRole()) || "ADMIN".equalsIgnoreCase(user.getRole())) {
+                    exams = examService.getAllExams();
+                } else {
+                    exams = examService.getExamsForInvigilator(username);
+                }
             }
 
             // Convert to flat DTOs the frontend expects
@@ -264,6 +274,23 @@ public class ExamController {
         } catch (Exception e) {
             return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Error deleting exam: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Delete all past exams from the system.
+     */
+    @DeleteMapping("/past")
+    public ResponseEntity<?> clearPastExams() {
+        try {
+            int deletedCount = examService.clearPastExams();
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Past exams cleared successfully");
+            response.put("deletedCount", deletedCount);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error clearing past exams: " + e.getMessage());
         }
     }
 
